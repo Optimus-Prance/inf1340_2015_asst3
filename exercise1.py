@@ -51,6 +51,8 @@ def selection(t, f):
     > select(R, f)
     [["A", "B", "C"], [4, 5, 6]]
 
+    We assume that the function is always compatible with the table.
+    (e.g. if the table has 3 columns, the function will not try to access the 4th column)
     """
 
     return []
