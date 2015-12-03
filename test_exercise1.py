@@ -130,6 +130,18 @@ def test_projection_no_attributes():
     assert is_equal(None, projection(EMPLOYEES, []))
     assert is_equal(None, projection(empty_table, []))
 
+def test_projection_multiple_same_attribute():
+    """
+    Test projection operation where attribute list has duplicates. Should only show the attribute once.
+    """
+    result = [["Surname", "FirstName"],
+              ["Smith", "Mary"],
+              ["Black", "Lucy"],
+              ["Verdi", "Nico"],
+              ["Smith", "Mark"]]
+
+    assert is_equal(result, projection(EMPLOYEES, ["Surname", "FirstName", "Surname", "FirstName"]))
+
 def test_projection_attribute_not_found():
     """
     Test projection operation if attribute not found.
