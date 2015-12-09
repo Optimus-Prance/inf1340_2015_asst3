@@ -65,6 +65,12 @@ def decide(input_file, countries_file):
     :return: List of strings. Possible values of strings are:
         "Accept", "Reject", and "Quarantine"
     """
+    with open(input_file, "r") as citizen_file:
+        citizen_content = citizen_file.read()
+    citizen_json = json.loads(citizen_content)
+    with open(countries_file, "r") as countries_file:
+        countries_content = countries_file.read()
+    COUNTRIES = json.loads(countries_content)
 
     return ["Reject"]
 
