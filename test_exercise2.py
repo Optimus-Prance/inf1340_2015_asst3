@@ -44,26 +44,26 @@ def test_returning():
     assert decide("test_returning_citizen.json", COUNTRIES_FILE) ==\
         ["Accept", "Accept", "Quarantine"]
 
-def test_returning_citizen_no_citizens_file():
+def test_decide_no_citizens_file():
     """
     Ensure that the file contains zero returning citizens.
     """
-    with open("test_returning_citizen_no_citizens.json", "r") as citizen_file:
+    with open("test_decide_no_citizens.json", "r") as citizen_file:
         citizen_content = citizen_file.read()
     citizen_json = json.loads(citizen_content)
     assert len(citizen_json) == 0
 
-def test_returning_citizen_no_citizens():
+def test_decide_no_citizens():
     """
     No travellers are returning.
     """
-    assert decide("test_returning_citizen_no_citizens.json", COUNTRIES_FILE) == []
+    assert decide("test_decide_no_citizens.json", COUNTRIES_FILE) == []
 
-def test_returning_citizen_missing_required_information_file():
+def test_decide_missing_required_information_file():
     """
     Ensure that the file contains citizens with missing information fields.
     """
-    with open("test_returning_citizen_missing_required_information.json", "r") as citizen_file:
+    with open("test_decide_missing_required_information.json", "r") as citizen_file:
         citizen_content = citizen_file.read()
     citizen_json = json.loads(citizen_content)
 
@@ -80,17 +80,17 @@ def test_returning_citizen_missing_required_information_file():
                     assert valid_passport_or_visa(person[item])
         assert required_fields_included == False
 
-def test_returning_citizen_missing_required_information():
+def test_decide_missing_required_information():
     """
     Travellers have required information that is missing, including incomplete location information.
     """
-    assert decide("test_returning_citizen_missing_required_information.json", COUNTRIES_FILE) == ["Reject"] * 16
+    assert decide("test_decide_missing_required_information.json", COUNTRIES_FILE) == ["Reject"] * 16
 
-def test_returning_citizen_unknown_location_file():
+def test_decide_unknown_locations_file():
     """
     Ensure that the file contains travellers that have locations listed that are unknown.
     """
-    with open("test_returning_citizen_unknown_locations.json", "r") as citizen_file:
+    with open("test_decide_unknown_locations.json", "r") as citizen_file:
         citizen_content = citizen_file.read()
     citizen_json = json.loads(citizen_content)
 
@@ -111,26 +111,37 @@ def test_returning_citizen_unknown_location_file():
         assert required_fields_included
     assert location_unknown
 
-def test_returning_citizen_unknown_location():
+def test_decide_unknown_locations():
     """
     Travellers have locations listed that are unknown. Assuming no missing required fields and no missing fields from
     location.
     """
     assert decide("test_returning_citizen_unknown_locations.json", COUNTRIES_FILE) == ["Reject"] * 5
 
-def test_returning_citizens_KAN_citizens_file():
-    with open("test_returning_citizen_KAN_citizens.json", "r") as citizen_file:
+def test_decide_KAN_citizens_file():
+    with open("test_decide_KAN_citizens.json", "r") as citizen_file:
         citizen_content = citizen_file.read()
     citizen_json = json.loads(citizen_content)
 
     assert valid_returning_citizen_file(citizen_json)
 
-def test_returning_citizens_KAN_citizens():
+def test_decide_KAN_citizens():
     """
-    Travellers have their home location as KAN.
+    Travellers that have their home location as KAN.
     """
-    assert decide("test_returning_citizen_KAN_citizens.json", COUNTRIES_FILE) == ["Accept"] * 3
+    assert decide("test_decide_KAN_citizens.json", COUNTRIES_FILE) == ["Accept"] * 3
 
+def test_decide_visitors_require_visas():
+    """
+    Visitors that have their home location other than KAN (but still a valid location), and because of their home
+    countries, they require a visa to enter.
+    """
+
+def test_decide_visitors_visas_not_needed():
+    """
+    Visitors that have their home location other than KAN (but still a valid location), but because of their home
+    countries, they do not require a visa to enter.
+    """
 
 #####################
 # HELPER FUNCTIONS ##
