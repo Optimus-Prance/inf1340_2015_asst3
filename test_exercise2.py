@@ -131,16 +131,33 @@ def test_decide_KAN_citizens():
     """
     assert decide("test_decide_KAN_citizens.json", COUNTRIES_FILE) == ["Accept"] * 3
 
-def test_decide_visitors_require_visas():
+def test_decide_visitors_require_visas_valid_visas():
     """
     Visitors that have their home location other than KAN (but still a valid location), and because of their home
-    countries, they require a visa to enter.
+    countries, they require a visa to enter. Their visas are valid.
+    """
+
+def test_decide_visitors_require_visas_invalid_visas():
+    """
+    Visitors that have their home location other than KAN (but still a valid location), and because of their home
+    countries, they require a visa to enter. Their visas are invalid/expired because they are older than 2 years.
     """
 
 def test_decide_visitors_visas_not_needed():
     """
     Visitors that have their home location other than KAN (but still a valid location), but because of their home
     countries, they do not require a visa to enter.
+    """
+
+def test_decide_visitors_via_country_with_medical_advisory_KAN_citizens():
+    """
+    Testing for KAN citizens that travelled from or via a country with a medical advisory
+    """
+
+def test_decide_visitors_via_country_with_medical_advisory_visitors():
+    """
+    Testing for visitors that are approved thus far (nothings missing, everything is valid, visa is present if
+    required), but travelled from or via a country with a medical advisory.
     """
 
 #####################
