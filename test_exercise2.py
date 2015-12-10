@@ -94,36 +94,35 @@ def test_decide_unknown_locations_file():
         citizen_content = citizen_file.read()
     citizen_json = json.loads(citizen_content)
 
+    assert valid_file_contents(citizen_json)
+
     for person in citizen_json:
-        location_unknown = False
-        required_fields_included = True
-        for item in REQUIRED_FIELDS:
-            assert item in person
-            if item not in person:
-                required_fields_included = False
-                break
-            if item in LOCATION_FIELDS and item in person:
-                assert valid_location_field(person[item])
-                if not valid_country_code(person[item], COUNTRIES):
-                    location_unknown = True
-            elif item is "passport" and item in person:
-                assert valid_passport_or_visa(person[item])
-        assert required_fields_included
-    assert location_unknown
+        unknown_location_found = False
+        for item in person:
+            if item in LOCATION_FIELDS:
+                if valid_country_code(person[item]['country'], COUNTRIES) == False:
+                    unknown_location_found = True
+        assert unknown_location_found
 
 def test_decide_unknown_locations():
     """
     Travellers have locations listed that are unknown. Assuming no missing required fields and no missing fields from
-    location.
+    locations.
     """
-    assert decide("test_returning_citizen_unknown_locations.json", COUNTRIES_FILE) == ["Reject"] * 5
+    assert decide("test_decide_unknown_locations.json", COUNTRIES_FILE) == ["Reject"] * 5
 
 def test_decide_KAN_citizens_file():
     with open("test_decide_KAN_citizens.json", "r") as citizen_file:
         citizen_content = citizen_file.read()
     citizen_json = json.loads(citizen_content)
 
-    assert valid_returning_citizen_file(citizen_json)
+    assert valid_file_contents(citizen_json)
+    for person in citizen_json:
+        for item in person:
+            location_fields_to_check = LOCATION_FIELDS[1:]  # Excludes home location field of country_code KAN
+            if item in location_fields_to_check:
+                country_code = person[item]['country']
+                assert COUNTRIES[country_code]['medical_advisory'] == ""
 
 def test_decide_KAN_citizens():
     """
@@ -157,20 +156,20 @@ def test_decide_visitors_visas_not_needed():
     """
     assert decide("test_decide_visitors_visas_not_needed.json", COUNTRIES_FILE) == ["Accept"] * 1
 
-def test_decide_visitors_via_country_with_medical_advisory_KAN_citizens():
+def test_decide_KAN_citizens_via_country_with_medical_advisory():
     """
     Testing for KAN citizens that travelled from or via a country with a medical advisory. All required information
     is present.
     """
-    assert decide("test_decide_visitors_via_country_with_medical_advisory_KAN_citizens.json", COUNTRIES_FILE) ==\
+    assert decide("test_decide_KAN_citizens_via_country_with_medical_advisory.json", COUNTRIES_FILE) ==\
            ["Quarantine"] * 1
 
-def test_decide_visitors_via_country_with_medical_advisory_visitors():
+def test_decide_visitors_via_country_with_medical_advisory():
     """
     Testing for visitors that are approved thus far (nothings missing, everything is valid, visa is present if
     required), but travelled from or via a country with a medical advisory. All required information is present.
     """
-    assert decide("test_decide_visitors_via_country_with_medical_advisory_visitors.json", COUNTRIES_FILE) ==\
+    assert decide("test_decide_visitors_via_country_with_medical_advisory.json", COUNTRIES_FILE) ==\
            ["Quarantine"] * 1
 
 #####################
@@ -207,18 +206,18 @@ def test_valid_location_field():
     d6 = {'city': 'city_name', 'region': 'region_name', 'province': 'province_name', 'country':'country_name'}
     assert valid_location_field(d6) == False
 
-def valid_country_code(location, countries):
+def valid_country_code(location_code, countries):
     """
     Finds out if a country code in a location field is valid by comparing to a valid country codes list,
     and returns a boolean.
 
-    :param location: a dictionary with "country" as a key, denoting the country code
+    :param location_code: a dictionary with "country" as a key, denoting the country code
     :param countries: a dictionary of countries, with the key representing the country code
     :return: True if the location's country code is contained in the valid list of country codes. False otherwise.
     """
     country_match = False
     for country_code in countries.keys():
-        if location["country"] == country_code: # country_code
+        if location_code == country_code:
             country_match = True
     return country_match
 
@@ -239,10 +238,8 @@ def test_valid_country_code():
             "medical_advisory": ""
         }
     }
-    l1 = {'city': 'Angora', 'region': 'AG', 'country':'ALB'}
-    assert valid_country_code(l1,countries)
-    l1 = {'city': 'Euphus', 'region': 'EU', 'country':'MLC'}
-    assert valid_country_code(l1,countries) == False
+    assert valid_country_code("ALB",countries)
+    assert valid_country_code("MLC",countries) == False
 
 def valid_passport_or_visa(passport_or_visa_number):
     """
@@ -300,7 +297,7 @@ def test_valid_date():
     assert valid_date("1982-02-32") == False
     assert valid_date("1972-3-9") == False
 
-def valid_returning_citizen_file(file_contents):
+def valid_file_contents(file_contents):
     """
     This function checks to see that the file contents are valid: no required fields are missing, location
     information is complete, birth_date and passport/visa number is valid.
@@ -313,20 +310,20 @@ def valid_returning_citizen_file(file_contents):
         for item in REQUIRED_FIELDS:
             if item not in person:
                 valid_file = False
-            else:
-                if item in LOCATION_FIELDS:
-                    if not valid_location_field(person[item]):
-                        valid_file = False
-                elif item is "passport":
-                    if not valid_passport_or_visa(person[item]):
-                        valid_file = False
-                elif item is "visa":
-                    if not valid_passport_or_visa(person[item]['code']) or not valid_date(person[item]['date']):
-                        valid_file = False
-                elif item is "entry_reason":
-                    if person[item] not in REASON_FOR_ENTRY:
-                        valid_file = False
-                elif item is "birth_date":
-                    if not valid_date(person[item]):
-                        valid_file = False
+        for item in person:
+            if item in LOCATION_FIELDS:
+                if not valid_location_field(person[item]):
+                    valid_file = False
+            elif item is "passport":
+                if not valid_passport_or_visa(person[item]):
+                    valid_file = False
+            elif item is "visa":
+                if not valid_passport_or_visa(person[item]['code']) or not valid_date(person[item]['date']):
+                    valid_file = False
+            elif item is "entry_reason":
+                if person[item] not in REASON_FOR_ENTRY:
+                    valid_file = False
+            elif item is "birth_date":
+                if not valid_date(person[item]):
+                    valid_file = False
     return valid_file
