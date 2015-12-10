@@ -30,3 +30,9 @@ def test_returning_citizen_no_citizens():
     No travellers are returning.
     """
     assert decide("test_returning_citizen_no_citizens.json") == []
+
+def test_returning_citizen_missing_required_information():
+    """
+    Travellers have required information that is missing.
+    """
+    assert decide("test_returning_citizen_missing_required_information.json") == ["Reject"] * 14
