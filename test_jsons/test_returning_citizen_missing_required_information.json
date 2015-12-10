@@ -16,7 +16,7 @@
     }
   },
   {
-    "passport": "TJ32R-25SGE-FWI52=0S840-420DS",
+    "passport": "TJ32R-25SGE-FWI52-0S840-420DS",
     "first_name": "LUNA",
     "birth_date": "1988-03-30",
     "home": {
@@ -40,7 +40,7 @@
       "region": "PB",
       "country": "JIK"
     },
-    "entry_reason": "visiting sibling",
+    "entry_reason": "visiting",
     "from": {
       "city": "Navit",
       "region": "Quay",
@@ -56,7 +56,7 @@
       "region": "Jarabarka",
       "country": "III"
     },
-    "entry_reason": "vacation",
+    "entry_reason": "visiting",
     "from": {
       "city": "Sata",
       "region": "Jupa",
@@ -68,7 +68,7 @@
     "first_name": "HABIB",
     "last_name": "LARK",
     "birth_date": "1924-11-09",
-    "entry_reason": "immigrating",
+    "entry_reason": "visiting",
     "from": {
       "city": "Yucat",
       "region": "PO",
@@ -94,7 +94,7 @@
       "date": "2015-12-04",
       "code": "RWEOH-435DF-5KFSP-42MFX-BAQL0"
     },
-    "entry_reason": "visiting friend"
+    "entry_reason": "visiting"
   },
   {
     "home": {
@@ -179,7 +179,7 @@
       "date": "2015-03-04",
       "code": "TWR32-534OO-P40MF-426IM-VVS59"
     },
-    "entry_reason": "connection"
+    "entry_reason": "visiting"
   },
   {
     "passport": "T244W-53REW-RWFDY-T3TE6-WY00K",
@@ -189,6 +189,37 @@
       "city": "Melina",
       "region": "TI",
       "country": "KAN"
+    }
+  },
+  {
+    "passport": "R2RES-58DJT-R2J4D-TJ3M4-MN243",
+    "first_name": "DANA",
+    "last_name": "RICHIE",
+    "birth_date": "1972-03-06",
+    "home": {
+      "city": "Bala",
+      "country": "KAN"
+    },
+    "entry_reason": "returning",
+    "from": {
+      "city": "Slavok",
+      "region": "Iuquin",
+      "country": "DSK"
+    }
+  },
+  {
+    "passport": "T2HR3-DW42T-TKX4D-323M5-MJTU3",
+    "first_name": "LORK",
+    "last_name": "KANN",
+    "birth_date": "1939-08-16",
+    "home": {
+      "city": "Lata",
+      "region": "RI",
+      "country": "KAN"
+    },
+    "entry_reason": "returning",
+    "from": {
+      "country": "III"
     }
   },
   {
