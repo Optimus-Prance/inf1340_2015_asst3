@@ -14,6 +14,11 @@ __license__ = "MIT License"
 #####################
 # HELPER FUNCTIONS ##
 #####################
+EMPLOYEES = [["Surname", "FirstName", "Age", "Salary"],
+             ["Smith", "Mary", 25, 2000],
+             ["Black", "Lucy", 40, 3000],
+             ["Verdi", "Nico", 36, 4500],
+             ["Smith", "Mark", 40, 3900]]
 
 def remove_duplicates(l):
     """
@@ -73,6 +78,9 @@ def projection(t, r):
     plist = []
     new = []
     count = 0
+    if r == [] or  t == []:
+            return None
+
     for attr in r:
         if attr in t[0]:
             pos = t[0].index(attr)
@@ -83,10 +91,13 @@ def projection(t, r):
     for row in t:
         container = []
         for k in plist:
-            container.append(l[count][k])
+            container.append(t[count][k])
         new.append(container)
         count +=1
-    return new
+    if len(new) == 0:
+        return None
+    else:
+        return new
 
 
 
