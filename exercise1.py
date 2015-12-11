@@ -69,8 +69,26 @@ def projection(t, r):
     [["A", "C"], [1, 3], [4, 6]]
 
     """
+    #haven't tested this against the test cases yet, will do that later tonight
+    plist = []
+    new = []
+    count = 0
+    for attr in r:
+        if attr in t[0]:
+            pos = t[0].index(attr)
+            if pos not in plist:
+                plist.append(pos)
+        elif attr not in t[0]:
+            return False
+    for row in t:
+        container = []
+        for k in plist:
+            container.append(l[count][k])
+        new.append(container)
+        count +=1
+    return new
 
-    return []
+
 
 
 def cross_product(t1, t2):
