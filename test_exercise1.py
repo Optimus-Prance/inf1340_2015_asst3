@@ -252,7 +252,7 @@ def test_cross_product_empty_table():
     Test cross product operation using an empty table.
     """
     empty_table = [["ID Number", "Date of Birth"]]
-    assert is_equal(None, cross_product(empty_table, R1))
-    assert is_equal(None, cross_product(empty_table, R2))
-    assert is_equal(None, cross_product(R1, empty_table))
-    assert is_equal(None, cross_product(R2, empty_table))
+    assert cross_product(empty_table, R1) == None
+    assert cross_product(empty_table, R2) == None
+    assert cross_product(R1, empty_table) == None
+    assert cross_product(R2, empty_table) == None
