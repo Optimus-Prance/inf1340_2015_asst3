@@ -92,7 +92,7 @@ def test_selection_no_results():
            ["Smith", "Mary", 25, 2000],
            ["Black", "Lucy", 40, 3000]]
 
-    assert is_equal(None, selection(E_2, filter_employees))
+    assert selection(E_2, filter_employees) == None
 
 def test_selection_empty_input_table():
     """
@@ -100,7 +100,7 @@ def test_selection_empty_input_table():
     """
     E_3 = [["Surname", "FirstName", "Age", "Salary"]]
 
-    assert is_equal(None, selection(E_3, filter_employees))
+    assert selection(E_3, filter_employees) == None
 
 def test_projection_some_attributes():
     """
@@ -126,19 +126,16 @@ def test_projection_all_attributes():
     attribute_list = ["Surname","FirstName", "Age", "Salary"]
     empty_table = [attribute_list]
     assert is_equal(result, projection(EMPLOYEES, attribute_list))
-    #had an error raised on this regarding the is equal function
-    #said that the sort method wont work on none, dunno if that helps but i felt that I should let ya know
-    # assert is_equal(None,projection(empty_table,attribute_list))
-
+    assert projection(empty_table,attribute_list) == None
 
 def test_projection_no_attributes():
     """
     Test projection operation with no attributes getting projected.
     """
     assert projection(EMPLOYEES, []) == None
-    #had an error raised on this regarding the is equal function
-    #said that the sort method wont work on none, dunno if that helps but i felt that I should let ya know
-    # assert is_equal(None, projection(empty_table, []))
+
+    empty_table = [["Surname","FirstName", "Age", "Salary"]]
+    assert projection(empty_table,[]) == None
 
 def test_projection_multiple_same_attribute():
     """
