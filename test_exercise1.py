@@ -123,8 +123,8 @@ def test_projection_all_attributes():
              ["Black", "Lucy", 40, 3000],
              ["Verdi", "Nico", 36, 4500],
              ["Smith", "Mark", 40, 3900]]
-    attribute_list = ["Surname","FirstName", "Age", "Salary"]
-    empty_table = [[attribute_list]]
+    attribute_list = ["Surname", "FirstName", "Age", "Salary"]
+    empty_table = [attribute_list]
     assert is_equal(result, projection(EMPLOYEES, attribute_list))
     assert projection(empty_table, attribute_list) == None
 
@@ -148,6 +148,14 @@ def test_projection_multiple_same_attribute():
               ["Smith", "Mark"]]
 
     assert is_equal(result, projection(EMPLOYEES, ["Surname", "FirstName", "Surname", "FirstName"]))
+
+def test_projection_empty_input_table():
+    """
+    Test select operation where input table is an empty table.
+    """
+    empty_table = [["Surname", "FirstName", "Age", "Salary"]]
+
+    assert projection(empty_table, ["Surname", "FirstName", "Surname", "FirstName"]) == None
 
 def test_projection_attribute_not_found():
     """

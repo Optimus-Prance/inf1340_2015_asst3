@@ -74,28 +74,25 @@ def projection(t, r):
     [["A", "C"], [1, 3], [4, 6]]
 
     """
-    #haven't tested this against the test cases yet, will do that later tonight
-    plist = []
-    new = []
-    count = 0
-    if r == [] or  t == []:
-            return None
-    if len(t) < 2:
+    if r == [] or  t == [] or len(t) < 2:
         return None
 
+    plist = []
+    #Fill out plist, which lists the indices of the matched attributes
     for attr in r:
         if attr in t[0]:
             pos = t[0].index(attr)
             if pos not in plist:
                 plist.append(pos)
-        elif attr not in t[0]:
+        else:
             raise UnknownAttributeException
+
+    new = []
     for row in t:
         container = []
-        for k in plist:
-            container.append(t[count][k])
+        for attr_index in plist:
+            container.append(row[attr_index])
         new.append(container)
-        count +=1
     if len(new) == 0:
         return None
     else:
