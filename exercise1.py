@@ -69,7 +69,7 @@ def selection(t, f):
         return None
     return new
 
-    return []
+    
 
 
 def projection(t, r):
