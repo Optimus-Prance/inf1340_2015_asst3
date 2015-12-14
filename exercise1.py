@@ -59,6 +59,15 @@ def selection(t, f):
     We assume that the function is always compatible with the table.
     (e.g. if the table has 3 columns, the function will not try to access the 4th column)
     """
+    new =[]
+    if len(t) < 2:
+        return None
+    for row in t:
+        if f(row) is True:
+            new.append(row)
+    if len(new) <= 1:
+        return None
+    return new
 
     return []
 
