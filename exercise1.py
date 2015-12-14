@@ -80,6 +80,8 @@ def projection(t, r):
     count = 0
     if r == [] or  t == []:
             return None
+    if len(t) < 2:
+        return None
 
     for attr in r:
         if attr in t[0]:
