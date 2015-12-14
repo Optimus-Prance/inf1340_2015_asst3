@@ -124,7 +124,7 @@ def test_projection_all_attributes():
              ["Verdi", "Nico", 36, 4500],
              ["Smith", "Mark", 40, 3900]]
     attribute_list = ["Surname","FirstName", "Age", "Salary"]
-    empty_table = [attribute_list]
+    empty_table = []
     assert is_equal(result, projection(EMPLOYEES, attribute_list))
     assert projection(empty_table,attribute_list) == None
 
