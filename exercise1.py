@@ -89,7 +89,7 @@ def projection(t, r):
             if pos not in plist:
                 plist.append(pos)
         elif attr not in t[0]:
-            return False
+            raise UnknownAttributeException
     for row in t:
         container = []
         for k in plist:
