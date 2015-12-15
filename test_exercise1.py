@@ -6,12 +6,12 @@ Test module for exercise3.py
 
 """
 
+from exercise1 import selection, projection, cross_product, UnknownAttributeException
+
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
 __copyright__ = "Adopted from: 2015 Susan Sim"
 __license__ = "MIT License"
-
-from exercise1 import selection, projection, cross_product
 
 
 ###########
@@ -74,33 +74,37 @@ def test_selection_some_results():
 
     assert is_equal(result, selection(EMPLOYEES, filter_employees))
 
+
 def test_selection_all_results():
     """
     Test select operation with selection that returns everything
     """
-    E_1 = [["Surname", "FirstName", "Age", "Salary"],
-           ["Verdi", "Nico", 36, 4500],
-           ["Smith", "Mark", 40, 3900]]
+    table = [["Surname", "FirstName", "Age", "Salary"],
+             ["Verdi", "Nico", 36, 4500],
+             ["Smith", "Mark", 40, 3900]]
 
-    assert is_equal(E_1, selection(E_1, filter_employees))
+    assert is_equal(table, selection(table, filter_employees))
+
 
 def test_selection_no_results():
     """
     Test select operation where nothing gets selected.
     """
-    E_2 = [["Surname", "FirstName", "Age", "Salary"],
-           ["Smith", "Mary", 25, 2000],
-           ["Black", "Lucy", 40, 3000]]
+    table = [["Surname", "FirstName", "Age", "Salary"],
+             ["Smith", "Mary", 25, 2000],
+             ["Black", "Lucy", 40, 3000]]
 
-    assert selection(E_2, filter_employees) == None
+    assert selection(table, filter_employees) is None
+
 
 def test_selection_empty_input_table():
     """
     Test select operation where input table is an empty table.
     """
-    E_3 = [["Surname", "FirstName", "Age", "Salary"]]
+    empty_table = [["Surname", "FirstName", "Age", "Salary"]]
 
-    assert selection(E_3, filter_employees) == None
+    assert selection(empty_table, filter_employees) is None
+
 
 def test_projection_some_attributes():
     """
@@ -114,28 +118,31 @@ def test_projection_some_attributes():
 
     assert is_equal(result, projection(EMPLOYEES, ["Surname", "FirstName"]))
 
+
 def test_projection_all_attributes():
     """
     Test projection operation with all attributes projected.
     """
     result = [["Surname", "FirstName", "Age", "Salary"],
-             ["Smith", "Mary", 25, 2000],
-             ["Black", "Lucy", 40, 3000],
-             ["Verdi", "Nico", 36, 4500],
-             ["Smith", "Mark", 40, 3900]]
+              ["Smith", "Mary", 25, 2000],
+              ["Black", "Lucy", 40, 3000],
+              ["Verdi", "Nico", 36, 4500],
+              ["Smith", "Mark", 40, 3900]]
     attribute_list = ["Surname", "FirstName", "Age", "Salary"]
     empty_table = [attribute_list]
     assert is_equal(result, projection(EMPLOYEES, attribute_list))
-    assert projection(empty_table, attribute_list) == None
+    assert projection(empty_table, attribute_list) is None
+
 
 def test_projection_no_attributes():
     """
     Test projection operation with no attributes getting projected.
     """
-    assert projection(EMPLOYEES, []) == None
+    assert projection(EMPLOYEES, []) is None
 
-    empty_table = [["Surname","FirstName", "Age", "Salary"]]
-    assert projection(empty_table,[]) == None
+    empty_table = [["Surname", "FirstName", "Age", "Salary"]]
+    assert projection(empty_table, []) is None
+
 
 def test_projection_multiple_same_attribute():
     """
@@ -149,13 +156,15 @@ def test_projection_multiple_same_attribute():
 
     assert is_equal(result, projection(EMPLOYEES, ["Surname", "FirstName", "Surname", "FirstName"]))
 
+
 def test_projection_empty_input_table():
     """
     Test select operation where input table is an empty table.
     """
     empty_table = [["Surname", "FirstName", "Age", "Salary"]]
 
-    assert projection(empty_table, ["Surname", "FirstName", "Surname", "FirstName"]) == None
+    assert projection(empty_table, ["Surname", "FirstName", "Surname", "FirstName"]) is None
+
 
 def test_projection_attribute_not_found():
     """
@@ -165,14 +174,15 @@ def test_projection_attribute_not_found():
     try:
         projection(EMPLOYEES, ["LastName", "GivenName"])
         assert False
-    except:
+    except UnknownAttributeException:
         assert True
     # Partial mismatch
     try:
         projection(EMPLOYEES, ["Date of Birth", "Income"])
         assert False
-    except:
+    except UnknownAttributeException:
         assert True
+
 
 def test_cross_product_basic():
     """
@@ -216,16 +226,18 @@ def test_cross_product_basic():
 
     assert is_equal(result_3, cross_product(EMPLOYEES, R1))
 
+
 def test_cross_product_same_tables():
     """
     Test cross product operation using the same tables.
     """
     result = [["Employee", "Department", "Employee", "Department"],
-                ["Smith", "sales", "Smith", "sales"],
-                ["Black", "production", "Black", "production"],
-                ["White", "production", "White", "production"]]
+              ["Smith", "sales", "Smith", "sales"],
+              ["Black", "production", "Black", "production"],
+              ["White", "production", "White", "production"]]
 
     assert is_equal(result, cross_product(R1, R1))
+
 
 def test_cross_product_one_row_table():
     """
@@ -255,12 +267,13 @@ def test_cross_product_one_row_table():
 
     assert is_equal(result_3, cross_product(table_with_one_row, table_with_one_row))
 
+
 def test_cross_product_empty_table():
     """
     Test cross product operation using an empty table.
     """
     empty_table = [["ID Number", "Date of Birth"]]
-    assert cross_product(empty_table, R1) == None
-    assert cross_product(empty_table, R2) == None
-    assert cross_product(R1, empty_table) == None
-    assert cross_product(R2, empty_table) == None
+    assert cross_product(empty_table, R1) is None
+    assert cross_product(empty_table, R2) is None
+    assert cross_product(R1, empty_table) is None
+    assert cross_product(R2, empty_table) is None
