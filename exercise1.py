@@ -20,6 +20,7 @@ EMPLOYEES = [["Surname", "FirstName", "Age", "Salary"],
              ["Verdi", "Nico", 36, 4500],
              ["Smith", "Mark", 40, 3900]]
 
+
 def remove_duplicates(l):
     """
     Removes duplicates from l, where l is a List of Lists.
@@ -58,8 +59,12 @@ def selection(t, f):
 
     We assume that the function is always compatible with the table.
     (e.g. if the table has 3 columns, the function will not try to access the 4th column)
+
+    :param t: A table depicted by a list of lists: the first list item is the list of attributes.
+    :param f: A function that operates on a row that returns a boolean (True or False).
+    :return: A table if the resulting table has at least one row (two lists in the list), or None otherwise.
     """
-    new =[]
+    new = []
     if len(t) < 2:
         return None
     for row in t:
@@ -70,8 +75,6 @@ def selection(t, f):
     return new
 
     
-
-
 def projection(t, r):
     """
     Perform projection operation on table t
@@ -82,8 +85,11 @@ def projection(t, r):
     > projection(R, ["A", "C"])
     [["A", "C"], [1, 3], [4, 6]]
 
+    :param t: A table depicted by a list of lists: the first list item is the list of attributes.
+    :param r: A list of strings denoting attributes of a table.
+    :return: A table if the resulting table has at least one row (two lists in the list), or None otherwise.
     """
-    if r == [] or  t == [] or len(t) < 2:
+    if r == [] or t == [] or len(t) < 2:
         return None
 
     plist = []
@@ -108,8 +114,6 @@ def projection(t, r):
         return new
 
 
-
-
 def cross_product(t1, t2):
     """
     Return the cross-product of tables t1 and t2.
@@ -119,8 +123,9 @@ def cross_product(t1, t2):
     > R2 = [["C", "D"], [5,6]]
     [["A", "B", "C", "D"], [1, 2, 5, 6], [3, 4, 5, 6]]
 
-
+    :param t1: A table depicted by a list of lists: the first list item is the list of attributes.
+    :param t2: A table depicted by a list of lists: the first list item is the list of attributes.
+    :return: A table if the resulting table has at least one row (two lists in the list), or None otherwise.
     """
 
     return []
-
