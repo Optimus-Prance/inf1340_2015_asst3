@@ -40,14 +40,6 @@ DATE_TODAY is a string of the format YYYY-MM-DD representing today's date.
 DATE_TODAY = "2015-12-16"
 
 
-def test_returning():
-    """
-    Travellers are returning to KAN.
-    """
-    assert decide("test_returning_citizen.json", COUNTRIES_FILE) ==\
-        ["Accept", "Accept", "Quarantine"]
-
-
 def test_decide_no_citizens_file():
     """
     Ensure that the file contains zero returning citizens.
@@ -163,14 +155,15 @@ def test_decide_visitors_require_visas_valid_visas_file():
         assert country_code != "KAN"
         assert COUNTRIES[country_code]['visitor_visa_required'] == "1"
         valid = False
+        assert "visa" in person
         if "visa" in person:
             if valid_visa(person["visa"], DATE_TODAY):
                 valid = True
+        assert valid
         for item in LOCATION_FIELDS:
             if item in person:
                 country_code_check_medical_advisory = person[item]['country']
                 assert COUNTRIES[country_code_check_medical_advisory]['medical_advisory'] == ""
-        assert valid
 
 
 def test_decide_visitors_require_visas_valid_visas():
@@ -200,11 +193,11 @@ def test_decide_visitors_require_visas_invalid_visas_file():
         if "visa" in person:
             if valid_visa(person["visa"], DATE_TODAY):
                 invalid_visa = False
+        assert invalid_visa
         for item in LOCATION_FIELDS:
             if item in person:
                 country_code_check_medical_advisory = person[item]['country']
                 assert COUNTRIES[country_code_check_medical_advisory]['medical_advisory'] == ""
-        assert invalid_visa
 
 
 def test_decide_visitors_require_visas_invalid_visas():
@@ -247,6 +240,10 @@ def test_decide_visitors_visas_not_needed():
 
 
 def test_decide_kan_citizens_via_country_with_medical_advisory_file():
+    """
+    Ensure that the file contains travellers that KAN citizens. Citizens travelled through or from a country
+    with a medical advisory.
+    """
     with open("test_decide_KAN_citizens_via_country_with_medical_advisory.json", "r") as citizen_file:
         citizen_content = citizen_file.read()
     citizen_json = json.loads(citizen_content)
@@ -275,18 +272,29 @@ def test_decide_kan_citizens_via_country_with_medical_advisory():
 
 
 def test_decide_visitors_via_country_with_medical_advisory_file():
+    """
+    Ensure that the file contains travellers that are visitors. Visitors travelled through or from a country with a
+    medical advisory. All visitors have or do not need valid visa.
+    """
     with open("test_decide_visitors_via_country_with_medical_advisory.json", "r") as citizen_file:
         citizen_content = citizen_file.read()
     citizen_json = json.loads(citizen_content)
 
     assert valid_file_contents(citizen_json)
     for person in citizen_json:
+        country_code = person["home"]["country"]
+        assert country_code != "KAN"
+        if COUNTRIES[country_code]['visitor_visa_required'] == "1":
+            visa_valid = False
+            assert "visa" in person
+            if "visa" in person:
+                if valid_visa(person["visa"], DATE_TODAY):
+                    visa_valid = True
+            assert visa_valid
         traveled_via_medical_advisory_country = False
-        for item in person:
-            if item == "home":
-                assert person["home"]["country"] != "KAN"
-            location_fields_to_check = LOCATION_FIELDS[1:]  # Excludes home location field of country_code KAN
-            if item in location_fields_to_check:
+        location_fields_to_check = LOCATION_FIELDS[1:]  # Excludes home location field
+        for item in location_fields_to_check:
+            if item in person:
                 country_code = person[item]['country']
                 if COUNTRIES[country_code]['medical_advisory'] != "":
                     traveled_via_medical_advisory_country = True
@@ -295,11 +303,50 @@ def test_decide_visitors_via_country_with_medical_advisory_file():
 
 def test_decide_visitors_via_country_with_medical_advisory():
     """
-    Testing for visitors that are approved thus far (nothings missing, everything is valid, visa is present if
-    required), but travelled from or via a country with a medical advisory. All required information is present.
+    Testing for visitors that are approved thus far (no required information missing, everything is valid, visa is
+    present if required), but travelled from or via a country with a medical advisory.
     """
     assert decide("test_decide_visitors_via_country_with_medical_advisory.json", COUNTRIES_FILE) ==\
-        ["Quarantine"] * 1
+        ["Quarantine"] * 4
+
+
+def test_decide_visitors_invalid_visa_via_country_with_medical_advisory_file():
+    """
+    Ensure that the file contains travellers that are visitors. Visitors travelled through or from a country with a
+    medical advisory. All visitors are from a country that requires a visitor_visa, but these travellers do not have
+    valid visas.
+    """
+    with open("test_decide_visitors_invalid_visa_via_country_with_medical_advisory.json", "r") as citizen_file:
+        citizen_content = citizen_file.read()
+    citizen_json = json.loads(citizen_content)
+
+    assert valid_file_contents(citizen_json)
+    for person in citizen_json:
+        country_code = person["home"]["country"]
+        assert country_code != "KAN"
+        assert COUNTRIES[country_code]['visitor_visa_required'] == "1"
+        invalid_visa = True
+        if "visa" in person:
+            if valid_visa(person["visa"], DATE_TODAY):
+                invalid_visa = False
+        assert invalid_visa
+        traveled_via_medical_advisory_country = False
+        location_fields_to_check = LOCATION_FIELDS[1:]  # Excludes home location field
+        for item in location_fields_to_check:
+            if item in person:
+                country_code = person[item]['country']
+                if COUNTRIES[country_code]['medical_advisory'] != "":
+                    traveled_via_medical_advisory_country = True
+        assert traveled_via_medical_advisory_country
+
+
+def test_decide_visitors_invalid_visa_via_country_with_medical_advisory():
+    """
+    Testing for visitors that do not have a valid visa and has travelled through or from a country with a medical
+    advisory.
+    """
+    assert decide("test_decide_visitors_invalid_visa_via_country_with_medical_advisory.json", COUNTRIES_FILE) ==\
+        ["Reject"] * 4
 
 #####################
 # HELPER FUNCTIONS ##
