@@ -406,6 +406,19 @@ def test_valid_location_field():
     assert valid_location_field(d7) is False
 
 
+def test_valid_visa_format():
+    """
+    Tests the valid_visa_format function. A valid visa format should be two groups of five alphanumeric characters
+    separated by a dash.
+    """
+    assert valid_visa_format("52NDX-2RSEF") is True
+    assert valid_visa_format("2nrx3-fkWW3") is True
+    assert valid_visa_format("2nrx3-fkWW32") is False
+    assert valid_visa_format("2nr_3-fkWW2") is False
+    assert valid_visa_format("2nrx3-fkWW2-WJD23") is False
+    assert valid_visa_format("2nrx3-fkWW") is False
+    assert valid_visa_format("2rjxefn2rx") is False
+
 def valid_visa(visa, date_today):
     """
     This function checks to see if a visa is valid, as defined by having a visa number of five groups of
@@ -447,6 +460,10 @@ def test_valid_passport():
 def test_valid_date_format():
     assert valid_date_format("1952-12-25") is True
     assert valid_date_format("2002-01-05") is True
+    assert valid_date_format("2002-01-31") is True
+    assert valid_date_format("2000-02-28") is True
+    assert valid_date_format("2002-02-30") is False
+    assert valid_date_format("2002-04-31") is False
     assert valid_date_format("195-12-25") is False
     assert valid_date_format("1952-13-05") is False
     assert valid_date_format("1982-02-32") is False
