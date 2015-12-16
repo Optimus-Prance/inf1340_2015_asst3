@@ -24,6 +24,7 @@ R1 = [["Employee", "Department"],
       ["Black", "production"],
       ["White", "production"]]
 
+
 def remove_duplicates(l):
     """
     Removes duplicates from l, where l is a List of Lists.
@@ -62,8 +63,13 @@ def selection(t, f):
 
     We assume that the function is always compatible with the table.
     (e.g. if the table has 3 columns, the function will not try to access the 4th column)
+    :param t: A table in the form of a list of lists with the first item being a list of strings denoting the
+      attribute names
+    :param f: A function that takes in a row of a table (denoted by a list) and returns a boolean.
+    :return: A table with only those rows for which when applied the function f, returns True. Otherwise, if the
+      resulting table is empty, None is returned.
     """
-    new =[]
+    new = []
     if len(t) < 2:
         return None
     for row in t:
@@ -85,7 +91,7 @@ def projection(t, r):
     > R = [["A", "B", "C"], [1, 2, 3], [4, 5, 6]]
     > projection(R, ["A", "C"])
     [["A", "C"], [1, 3], [4, 6]]
-
+    
     """
     if r == [] or  t == [] or len(t) < 2:
         return None
@@ -110,8 +116,6 @@ def projection(t, r):
         return None
     else:
         return new
-
-
 
 
 def cross_product(t1, t2):
