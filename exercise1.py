@@ -20,15 +20,6 @@ EMPLOYEES = [["Surname", "FirstName", "Age", "Salary"],
              ["Verdi", "Nico", 36, 4500],
              ["Smith", "Mark", 40, 3900]]
 
-R1 = [["Employee", "Department"],
-      ["Smith", "sales"],
-      ["Black", "production"],
-      ["White", "production"]]
-
-R2 = [["Department", "Head"],
-      ["production", "Mori"],
-      ["sales", "Brown"]]
-
 def remove_duplicates(l):
     """
     Removes duplicates from l, where l is a List of Lists.
@@ -78,7 +69,7 @@ def selection(t, f):
         return None
     return new
 
-
+    
 
 
 def projection(t, r):
@@ -119,7 +110,7 @@ def projection(t, r):
 
 
 
-def cross_product(t1,t2):
+def cross_product(t1, t2):
     """
     Return the cross-product of tables t1 and t2.
 
@@ -130,24 +121,6 @@ def cross_product(t1,t2):
 
 
     """
-    new = []
 
+    return []
 
-    #create new schema
-    for category in t2[0]:
-        t1[0].append(category)
-    new.append(t1[0])
-    #make table content
-    if t1 != t2:
-        for row in t1[1:]:
-            step = 0
-            for i in t2[1:]:
-                new.append(row + i)
-
-    if len(new) < 2:
-        return None
-
-    return new
-
-
-#havent got this to work if t1 and t2 are the same
