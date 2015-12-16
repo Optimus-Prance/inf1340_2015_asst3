@@ -63,6 +63,7 @@ def selection(t, f):
 
     We assume that the function is always compatible with the table.
     (e.g. if the table has 3 columns, the function will not try to access the 4th column)
+    
     :param t: A table in the form of a list of lists with the first item being a list of strings denoting the
       attribute names
     :param f: A function that takes in a row of a table (denoted by a list) and returns a boolean.
@@ -91,13 +92,18 @@ def projection(t, r):
     > R = [["A", "B", "C"], [1, 2, 3], [4, 5, 6]]
     > projection(R, ["A", "C"])
     [["A", "C"], [1, 3], [4, 6]]
-    
+
+    :param t: A table in the form of a list of lists with the first item being a list of strings denoting the
+      attribute names.
+    :param r: A list of attributes denoted by a list of strings.
+    :return: A table in the form of a list of lists with the first item being a list of strings denoting the list of
+      attributes. Otherwise, if the table is empty, None is returned.
     """
-    if r == [] or  t == [] or len(t) < 2:
+    if r == [] or t == [] or len(t) < 2:
         return None
 
     plist = []
-    #Fill out plist, which lists the indices of the matched attributes
+    # Fill out plist, which lists the indices of the matched attributes
     for attr in r:
         if attr in t[0]:
             pos = t[0].index(attr)
@@ -127,7 +133,12 @@ def cross_product(t1, t2):
     > R2 = [["C", "D"], [5,6]]
     [["A", "B", "C", "D"], [1, 2, 5, 6], [3, 4, 5, 6]]
 
-
+    :param t1: A table as denoted by a list of lists with the first list item representing the attributes in the form
+      of a list of strings.
+    :param t2: A table as denoted by a list of lists with the first list item representing the attributes in the form
+      of a list of strings.
+    :return: A table (list of lists) with the first list depicting the attributes of the table. Otherwise, if no rows
+      are in the table, None is returned
     """
 
     copy_table1 = t1[:]
@@ -136,11 +147,11 @@ def cross_product(t1, t2):
     new = []
 
     count = 1
-    #create new schema
+    # create new schema
     for category in copy_table2[0]:
         copy_table1[0].append(category)
     new.append(copy_table1[0])
-    #make table content
+    # make table content
     if copy_table1 != copy_table2:
         for row in copy_table1[1:]:
 
