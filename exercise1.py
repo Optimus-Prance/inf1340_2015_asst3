@@ -19,6 +19,10 @@ EMPLOYEES = [["Surname", "FirstName", "Age", "Salary"],
              ["Black", "Lucy", 40, 3000],
              ["Verdi", "Nico", 36, 4500],
              ["Smith", "Mark", 40, 3900]]
+R1 = [["Employee", "Department"],
+      ["Smith", "sales"],
+      ["Black", "production"],
+      ["White", "production"]]
 
 def remove_duplicates(l):
     """
@@ -122,19 +126,21 @@ def cross_product(t1, t2):
 
     """
 
-   
+    copy_table1 = t1[:]
+    copy_table2 = t2[:]
+
     new = []
 
     count = 1
     #create new schema
-    for category in t2[0]:
-        t1[0].append(category)
-    new.append(t1[0])
+    for category in copy_table2[0]:
+        copy_table1[0].append(category)
+    new.append(copy_table1[0])
     #make table content
-    if t1 != t2:
-        for row in t1[1:]:
-            step = 0
-            for i in t2[1:]:
+    if copy_table1 != copy_table2:
+        for row in copy_table1[1:]:
+
+            for i in copy_table2[1:]:
                 new.append(row + i)
 
     if len(new) < 2:
@@ -143,3 +149,4 @@ def cross_product(t1, t2):
     return new
 
 
+print(cross_product(EMPLOYEES, R1))
