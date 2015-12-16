@@ -16,7 +16,7 @@
       "country": "DSK"
     },
     "visa": {
-		  "code": "IDOW3-UT3RE-DN2RF-FFRM2-2JR98",
+		  "code": "IDOW3-UT3RE",
 		  "date": "2015-11-11"
     }
   },
@@ -37,7 +37,7 @@
       "country": "FRY"
     },
     "visa": {
-		  "code": "O2NR3-FJ2N5-4JTK3-PP3LR-NNVM3",
+		  "code": "O2NR3-FJ2N5",
 		  "date": "2014-02-01"
     }
   },
@@ -47,7 +47,7 @@
     "last_name": "GENES",
     "birth_date": "1958-05-13",
     "visa": {
-		  "code": "UD2S3-PFLX2-BRB2E-4JT9P-I2IRX",
+		  "code": "UD2S3-PFLX2",
 		  "date": "2013-12-30"
     },
     "home": {
@@ -65,7 +65,7 @@
   {
     "passport": "32RDR-42HDS-4GF8J-K9ROX-02RPX",
     "visa": {
-		  "code": "DWD33-23RVM-2RSFI-NBN33-3JRJ2",
+		  "code": "DWD33-23RVM",
 		  "date": "2015-02-13"
     },
     "first_name": "LISA",
