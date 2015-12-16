@@ -82,7 +82,39 @@ def decide(input_file, countries_file):
         countries_content = countries_file.read()
     COUNTRIES = json.loads(countries_content)
 
-    return ["Reject"]
+    decisions = []
+
+    for person in citizen_json:
+        reject = False
+        quarantine = False
+        accept = False
+        if required_fields_exist(person):
+            reject = True
+        elif unknown_location_exists(person):
+            reject = True
+        else:
+            if visitor_from_kan(person):
+                accept = True
+            elif not visitor_from_country_requiring_visa(person, COUNTRIES):
+                accept = True
+            elif visitor_from_country_requiring_visa(person, COUNTRIES) and has_valid_visa(person):
+                accept = True
+            else:
+                reject = True
+
+            if travelled_via_country_with_medical_advisory(person, COUNTRIES):
+                quarantine = True
+
+        if reject:
+            decisions.append("Reject")
+        elif quarantine:
+            decisions.append("Quarantine")
+        elif accept:
+            decisions.append("Accept")
+        else:
+            raise
+
+    return decisions
 
 
 def valid_passport_format(passport_number):
@@ -141,3 +173,15 @@ def valid_date_format(date_string):
                 if day > 29:
                     valid = False
     return valid
+
+
+def valid_visa(visa, date_today):
+    """
+    This function checks to see if a visa is valid, as defined by having a visa number of five groups of
+    alphanumeric characters (case-insensitive), separated by dashes, and a date within the past two years.
+
+    :param visa: a dictionary with "code" and "date" that represents a visa number and date respectively
+    :param date_today: string that represents a passport or visa number
+    :return: True, if the visa code is valid and the date is not more than 2 years, False otherwise.
+    """
+    return valid_visa_format(visa["code"]) and not is_more_than_x_years_ago(2, visa["date"])

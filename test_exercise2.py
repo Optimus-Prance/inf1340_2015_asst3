@@ -6,7 +6,7 @@
 import os
 import json
 import re
-from exercise2 import decide, valid_passport_format, is_more_than_x_years_ago, valid_date_format, valid_visa_format
+from exercise2 import decide, valid_passport_format, valid_date_format, valid_visa
 
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
@@ -418,17 +418,6 @@ def test_valid_visa_format():
     assert valid_visa_format("2nrx3-fkWW2-WJD23") is False
     assert valid_visa_format("2nrx3-fkWW") is False
     assert valid_visa_format("2rjxefn2rx") is False
-
-def valid_visa(visa, date_today):
-    """
-    This function checks to see if a visa is valid, as defined by having a visa number of five groups of
-    alphanumeric characters (case-insensitive), separated by dashes, and a date within the past two years.
-
-    :param visa: a dictionary with "code" and "date" that represents a visa number and date respectively
-    :param date_today: string that represents a passport or visa number
-    :return: True, if the visa code is valid and the date is not more than 2 years, False otherwise.
-    """
-    return valid_visa_format(visa["code"]) and not is_more_than_x_years_ago(2, visa["date"])
 
 
 def test_valid_visa():
