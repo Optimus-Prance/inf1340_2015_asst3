@@ -21,7 +21,7 @@ __license__ = "MIT License"
 ######################
 REQUIRED_FIELDS = ["passport", "first_name", "last_name",
                    "birth_date", "home", "entry_reason", "from"]
-
+LOCATION_FIELDS = ("home", "from", "via")
 ######################
 ## global variables ##
 ######################
@@ -131,6 +131,25 @@ def valid_passport_format(passport_number):
     if valid_regex_match is None:
         valid = False
     return valid
+
+
+def travelled_via_country_with_medical_advisory(person, countries):
+    """
+    Checks to see if the traveller came from or through a country with a medical advisory
+    :param person: a person's application in the form of a dictionary. It is assumed that there is no missing
+    of required information and that the locations they travelled from or through are valid locations (in countries)
+    :param countries: a dictionary of country_codes with information like if a country has a medical advisory or not.
+    :return: Returns True if the person travelled from or through a country with a medical advisory, False otherwise.
+    """
+    travelled_through_country_with_medical_advisory = False
+    location_fields_to_check = LOCATION_FIELDS[1:]     # Skips checking 'home'
+    for item in location_fields_to_check:
+        if item in person:
+            country_code = person[item]['country']
+            if countries[country_code]['medical_advisory'] != "":
+                travelled_through_country_with_medical_advisory = True
+    return travelled_through_country_with_medical_advisory
+
 
 
 def valid_visa_format(visa_code):

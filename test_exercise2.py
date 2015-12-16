@@ -6,7 +6,8 @@
 import os
 import json
 import re
-from exercise2 import decide, valid_passport_format, valid_date_format, valid_visa
+from exercise2 import decide, valid_passport_format, valid_date_format, valid_visa,\
+    travelled_via_country_with_medical_advisory
 
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
@@ -460,6 +461,106 @@ def test_valid_date_format():
     assert valid_date_format("03-09-2000") is False
 
 
+def test_travelled_via_country_with_medical_advisory():
+    countries = {"JIK": {"code": "JIK",
+                         "name": "Jikland",
+                         "visitor_visa_required": "0",
+                         "transit_visa_required": "0",
+                         "medical_advisory": ""},
+                 "KRA": {"code": "KRA",
+                         "name": "Kraznoviklandstan",
+                         "visitor_visa_required": "0",
+                         "transit_visa_required": "0",
+                         "medical_advisory": ""},
+                 "LUG": {"code": "LUG",
+                         "name": "Democratic Republic of Lungary",
+                         "visitor_visa_required": "1",
+                         "transit_visa_required": "1",
+                         "medical_advisory": "MUMPS"}}
+    t1 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KAN"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert travelled_via_country_with_medical_advisory(t1,countries) is False
+    t2 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KAN"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert travelled_via_country_with_medical_advisory(t2,countries) is False
+    t3 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "LUG"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"},
+          "via": {"city": "Lasher",
+                   "region": "Phuy",
+                   "country": "KRA"}}
+    assert travelled_via_country_with_medical_advisory(t3,countries) is False
+    t4 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "JIK"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "LUG"}}
+    assert travelled_via_country_with_medical_advisory(t4,countries) is True
+    t5 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KAN"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "KRA"},
+          "via": {"city": "Lasher",
+                   "region": "Phuy",
+                   "country": "LUG"}}
+    assert travelled_via_country_with_medical_advisory(t5,countries) is True
+    t6 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KAN"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "LUG"},
+          "via": {"city": "Lasher",
+                   "region": "Phuy",
+                   "country": "LUG"}}
+    assert travelled_via_country_with_medical_advisory(t6,countries) is True
+
+
+
 def valid_file_contents(file_contents):
     """
     This function checks to see that the file contents are valid: no required fields are missing, location
@@ -481,12 +582,12 @@ def valid_file_contents(file_contents):
                 if not valid_passport_format(person[item]):
                     valid_file = False
             elif item is "visa":
-                if not valid_visa(person[item]['code'], DATE_TODAY) or not valid_date(person[item]['date']):
+                if not valid_visa(person[item]['code'], DATE_TODAY) or not valid_date_format(person[item]['date']):
                     valid_file = False
             elif item is "entry_reason":
                 if person[item] not in REASON_FOR_ENTRY:
                     valid_file = False
             elif item is "birth_date":
-                if not valid_date(person[item]):
+                if not valid_date_format(person[item]):
                     valid_file = False
     return valid_file
