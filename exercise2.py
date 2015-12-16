@@ -6,14 +6,15 @@ Computer-based immigration office for Kanadia
 
 """
 
+import re
+import json
+import datetime
+
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
 __copyright__ = "Adopted from: 2015 Susan Sim"
 __license__ = "MIT License"
 
-import re
-import datetime
-import json
 
 ######################
 ## global constants ##
@@ -55,7 +56,16 @@ def is_more_than_x_years_ago(x, date_string):
 
 def decide(input_file, countries_file):
     """
-    Decides whether a traveller's entry into Kanadia should be accepted
+    Decides whether a traveller's entry into Kanadia should be accepted according to business rules. If a traveller has
+    any of the required information fields (first_name, last_name, birth_date, passport, home, from, and entry_reason)
+    missing, or if any location is unknown (i.e. not in the list of countries), then entry is denied. A Kanadia
+    citizen (as denoted by a entry_reason of 'returning', and the home country as "KAN") will be approved unless
+    they travelled from or through a country with a medical advisory, in which case they will be quarantined.
+    Non-Kanadia citizens (visitors) will be approved if their home country does not have a visa requirement, or if
+    their country does have a visa requirement, they have a valid visa, only if they did not travel through or from
+    a country with a medical advisory. If these visitors travelled through or from a country with a medical advisory,
+    then they are to be quarantined. Otherwise, if they are required to produce a visa but do not have a valid visa,
+    then they will be rejected.
 
     :param input_file: The name of a JSON formatted file that contains
         cases to decide
@@ -77,11 +87,18 @@ def decide(input_file, countries_file):
 
 def valid_passport_format(passport_number):
     """
-    Checks whether a pasport number is five sets of five alpha-number characters separated by dashes
-    :param passport_number: alpha-numeric string
-    :return: Boolean; True if the format is valid, False otherwise
+    This function checks to see if a passport number is valid, as defined by having five groups of
+    alphanumeric characters (case-insensitive), separated by dashes.
+
+    :param passport_number: string that represents a passport or visa number
+    :return: True, if the string conforms to the valid regular expression, False otherwise.
     """
-    return False
+    valid_regex = re.compile(r'^([\dA-Za-z]{5}-){4}[\dA-Za-z]{5}$')
+    valid_regex_match = valid_regex.search(passport_number)
+    valid = True
+    if valid_regex_match is None:
+        valid = False
+    return valid
 
 
 def valid_visa_format(visa_code):
@@ -91,6 +108,12 @@ def valid_visa_format(visa_code):
     :return: Boolean; True if the format is valid, False otherwise
 
     """
+    valid_regex = re.compile(r'^[\dA-Za-z]{5}-[\dA-Za-z]{5}$')
+    valid_regex_match = valid_regex.search(visa_code)
+    valid = True
+    if valid_regex_match is None:
+        valid = False
+    return valid
 
 
 def valid_date_format(date_string):
@@ -99,5 +122,22 @@ def valid_date_format(date_string):
     :param date_string: date to be checked
     :return: Boolean True if the format is valid, False otherwise
     """
-
-    return False
+    valid_regex = re.compile(r'^\d{4}(-\d{2}){2}$')
+    valid_regex_match = valid_regex.search(date_string)
+    valid = True
+    if valid_regex_match is None:
+        valid = False
+    else:
+        year = int(date_string[:4])
+        month = int(date_string[5:7])
+        day = int(date_string[8:])
+        if year < 1900 or year > 2016 or month < 1 or month > 12 or day < 1 or day > 31:
+            valid = False
+        else:
+            if month in [4,6,9,11]:
+                if day > 30:
+                    valid = False
+            elif month == 2:
+                if day > 29:
+                    valid = False
+    return valid

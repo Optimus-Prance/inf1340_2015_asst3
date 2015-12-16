@@ -6,7 +6,7 @@
 import os
 import json
 import re
-from exercise2 import decide
+from exercise2 import decide, valid_passport_format, is_more_than_x_years_ago, valid_date_format, valid_visa_format
 
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
@@ -65,17 +65,20 @@ def test_decide_missing_required_information_file():
         citizen_content = citizen_file.read()
     citizen_json = json.loads(citizen_content)
 
+    assert valid_file_contents(citizen_json) is False
+
     for person in citizen_json:
         required_fields_included = True
         for item in REQUIRED_FIELDS:
             if item not in person:
                 required_fields_included = False
+                break
             else:
                 if item in LOCATION_FIELDS:
                     if not valid_location_field(person[item]):
                         required_fields_included = False
-                elif item is "passport":
-                    assert valid_passport(person[item]) is True
+                elif item is "passport" and "passport" in person:
+                    assert valid_passport_format(person[item]) is True
         assert required_fields_included is False
 
 
@@ -88,15 +91,26 @@ def test_decide_missing_required_information():
 
 def test_decide_unknown_locations_file():
     """
-    Ensure that the file contains travellers that have locations listed that are unknown.
+    Ensure that the file contains travellers that have locations listed that are unknown, and that they have no
+    missing information that is required.
     """
     with open("test_decide_unknown_locations.json", "r") as citizen_file:
         citizen_content = citizen_file.read()
     citizen_json = json.loads(citizen_content)
 
-    assert valid_file_contents(citizen_json)
-
     for person in citizen_json:
+        for item in REQUIRED_FIELDS:
+            assert item in person
+        required_location_fields = LOCATION_FIELDS[:2]
+        optional_location_fields = LOCATION_FIELDS[2:]
+        for item in required_location_fields:
+            assert item in person
+            for field in REQUIRED_FIELDS_LOCATION:
+                assert field in person[item]
+        for item in optional_location_fields:
+            if item in person:
+                for field in REQUIRED_FIELDS_LOCATION:
+                    assert field in person[item]
         unknown_location_found = False
         for item in LOCATION_FIELDS:
             if item in person:
@@ -355,7 +369,8 @@ def test_decide_visitors_invalid_visa_via_country_with_medical_advisory():
 
 def valid_location_field(location):
     """
-    Finds out if a location field (in the form of a dictionary) is a validly filled out and returns a boolean.
+    Finds out if a location field (in the form of a dictionary) is a validly filled out and the country_code matches
+    a country in countries.json. Returns a boolean.
 
     :param location: a dictionary
     :return: True if the dictionary has all of and only the location fields. False otherwise.
@@ -367,22 +382,28 @@ def valid_location_field(location):
         for item in REQUIRED_FIELDS_LOCATION:
             if item not in location:
                 valid = False
+        if valid:
+            country_code = location["country"]
+            if country_code not in COUNTRIES and country_code != "KAN":
+                valid = False
     return valid
 
 
 def test_valid_location_field():
-    d1 = {'city': 'city_name', 'region': 'region_name', 'country': 'country_name'}
+    d1 = {'city': 'city_name', 'region': 'region_name', 'country': 'LUG'}
     assert valid_location_field(d1)
-    d2 = {'city': 'city_name', 'country': 'country_name', 'region': 'region_name'}
+    d2 = {'city': 'city_name', 'country': 'III', 'region': 'region_name'}
     assert valid_location_field(d2)
-    d3 = {'city': 'city_name', 'province': 'province_name', 'country': 'country_name'}
+    d3 = {'city': 'city_name', 'country': 'AAA', 'region': 'region_name'}
     assert valid_location_field(d3) is False
-    d4 = {'municipality': 'municipality_name', 'state': 'state_name', 'country': 'country_name'}
+    d4 = {'city': 'city_name', 'province': 'province_name', 'country': 'III'}
     assert valid_location_field(d4) is False
-    d5 = {'city': 'city_name', 'country': 'country_name'}
+    d5 = {'municipality': 'municipality_name', 'state': 'state_name', 'country': 'III'}
     assert valid_location_field(d5) is False
-    d6 = {'city': 'city_name', 'region': 'region_name', 'province': 'province_name', 'country': 'country_name'}
+    d6 = {'city': 'city_name', 'country': 'III'}
     assert valid_location_field(d6) is False
+    d7 = {'city': 'city_name', 'region': 'region_name', 'province': 'province_name', 'country': 'III'}
+    assert valid_location_field(d7) is False
 
 
 def valid_visa(visa, date_today):
@@ -392,129 +413,45 @@ def valid_visa(visa, date_today):
 
     :param visa: a dictionary with "code" and "date" that represents a visa number and date respectively
     :param date_today: string that represents a passport or visa number
-    :return: True, if the string conforms to the regular expression, False otherwise.
+    :return: True, if the visa code is valid and the date is not more than 2 years, False otherwise.
     """
-
-    valid_regex = re.compile(r'^([\dA-Za-z]{5}-){4}[\dA-Za-z]{5}$')
-    valid_regex_match = valid_regex.search(visa["code"])
-    valid_code = True
-    if valid_regex_match is None:
-        valid_code = False
-    return valid_code and date_within_two_years(visa["date"], date_today)
+    return valid_visa_format(visa["code"]) and not is_more_than_x_years_ago(2, visa["date"])
 
 
 def test_valid_visa():
-    d1 = {"date": "2015-02-24", "code": "6P294-42HR2-95PSF-93NFF-2TEWF"}
+    d1 = {"date": "2015-02-24", "code": "6P294-42HR2"}
     assert valid_visa(d1, "2015-12-16") is True
-    d2 = {"date": "2013-12-25", "code": "TJq2R-25stx-Fyc52-02rm0-420DS"}
+    d2 = {"date": "2013-12-25", "code": "TJq2R-25stx"}
     assert valid_visa(d2, "2015-12-16") is True
-    d3 = {"date": "2015-02-24", "code": "33T0R-8T3T2-W_C77-243GE-42O_D"}
+    d3 = {"date": "2015-02-24", "code": "3320R-8_3T2"}
     assert valid_visa(d3, "2015-12-16") is False
-    d4 = {"date": "2015-02-24", "code": "T2EW5-WT255-019RW-2RWS4-42FFX-TNX2R"}
+    d4 = {"date": "2015-02-24", "code": "T2EW5-WT255-RH2E3"}
     assert valid_visa(d4, "2015-12-16") is False
-    d5 = {"date": "2013-12-17", "code": "TJq2R-25stx-Fyc52-02rm0-420DS"}
+    d5 = {"date": "2013-12-17", "code": "TJq2R-25stx"}
     assert valid_visa(d5, "2015-12-16")
-    d6 = {"date": "2013-12-01", "code": "TJq2R-25stx-Fyc52-02rm0-420DS"}
+    d6 = {"date": "2013-12-01", "code": "TJq2R-25stx"}
     assert valid_visa(d6, "2015-12-16") is False
-
-
-def date_within_two_years(date_to_test, date_today):
-    """
-    Determine if the date_to_test is within two years of the date_today. Assumption: date_to_test is less-than/before
-    date_today. Assumption: the date is a valid date.
-    :param date_to_test: a string in the form of "YYYY-MM-DD" representing a date
-    :param date_today: a string in the form of "YYYY-MM-DD" representing a date
-    :return: True if the date_to_test is within or greater than 2 years. False otherwise
-    """
-    year_test = int(date_to_test[:4])
-    month_test = int(date_to_test[5:7])
-    day_test = int(date_to_test[8:])
-
-    year_today = int(date_today[:4])
-    month_today = int(date_today[5:7])
-    day_today = int(date_today[8:])
-
-    if year_test < (year_today - 2):
-        within_two_years = False
-    elif year_test > (year_today - 2):
-        within_two_years = True
-    elif month_test < month_today:
-        within_two_years = False
-    elif month_test > month_today:
-        within_two_years = True
-    elif day_test < day_today:
-        within_two_years = False
-    else:
-        within_two_years = True
-    return within_two_years
-
-
-def test_date_within_two_years():
-    assert date_within_two_years("2014-03-04", "2015-12-16") is True
-    assert date_within_two_years("2013-03-04", "2015-12-16") is False
-    assert date_within_two_years("2012-03-04", "2015-12-16") is False
-    assert date_within_two_years("2011-03-04", "2015-12-16") is False
-    assert date_within_two_years("2013-11-17", "2015-11-16") is True
-    assert date_within_two_years("2013-11-16", "2015-11-16") is True
-    assert date_within_two_years("2013-11-15", "2015-11-16") is False
-    assert date_within_two_years("2013-10-17", "2015-11-16") is False
-
-
-def valid_passport(passport_number):
-    """
-    This function checks to see if a passport number is valid, as defined by having five groups of
-    alphanumeric characters (case-insensitive), separated by dashes.
-
-    :param passport_number: string that represents a passport or visa number
-    :return: True, if the string conforms to the regular expression, False otherwise.
-    """
-    valid_regex = re.compile(r'^([\dA-Za-z]{5}-){4}[\dA-Za-z]{5}$')
-    valid_regex_match = valid_regex.search(passport_number)
-    valid = True
-    if valid_regex_match is None:
-        valid = False
-    return valid
 
 
 def test_valid_passport():
     s1 = "6P294-42HR2-95PSF-93NFF-2TEWF"
-    assert valid_passport(s1) is True
+    assert valid_passport_format(s1) is True
     s2 = "TJq2R-25stx-Fyc52-02rm0-420DS"
-    assert valid_passport(s2) is True
+    assert valid_passport_format(s2) is True
     s3 = "33T0R-8T3T2-W_C77-243GE-42O_D"
-    assert valid_passport(s3) is False
+    assert valid_passport_format(s3) is False
     s4 = "T2EW5-WT255-019RW-2RWS4-42FFX-TNX2R"
-    assert valid_passport(s4) is False
+    assert valid_passport_format(s4) is False
 
 
-def valid_date(date):
-    """
-    This function checks to see if date is valid, as defined by YYYY-MM-DD.
-    This function only assumes that the month can range from 01 to 12, and day can range from 01 to 31.
-
-    :param date: a string representing a birthdate
-    :return: True, if the birth_date conforms to the format with correct values (see above assumptions), False otherwise
-    """
-    valid_regex = re.compile(r'^\d{4}-(\d{2})-(\d{2})$')
-    valid_regex_match = valid_regex.search(date)
-    valid = True
-    if valid_regex_match is None:
-        valid = False
-    else:
-        month = int(date[5:7])
-        day = int(date[8:])
-        if 12 < month or month < 1 or 31 < day or day < 1:
-            valid = False
-    return valid
-
-
-def test_valid_date():
-    assert valid_date("1952-12-25") is True
-    assert valid_date("2002-01-05") is True
-    assert valid_date("195-12-25") is False
-    assert valid_date("1952-13-05") is False
-    assert valid_date("1982-02-32") is False
-    assert valid_date("1972-3-9") is False
+def test_valid_date_format():
+    assert valid_date_format("1952-12-25") is True
+    assert valid_date_format("2002-01-05") is True
+    assert valid_date_format("195-12-25") is False
+    assert valid_date_format("1952-13-05") is False
+    assert valid_date_format("1982-02-32") is False
+    assert valid_date_format("1972-3-9") is False
+    assert valid_date_format("03-09-2000") is False
 
 
 def valid_file_contents(file_contents):
@@ -535,7 +472,7 @@ def valid_file_contents(file_contents):
                 if not valid_location_field(person[item]):
                     valid_file = False
             elif item is "passport":
-                if not valid_passport(person[item]):
+                if not valid_passport_format(person[item]):
                     valid_file = False
             elif item is "visa":
                 if not valid_visa(person[item]['code'], DATE_TODAY) or not valid_date(person[item]['date']):
