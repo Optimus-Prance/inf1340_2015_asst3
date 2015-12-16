@@ -10,7 +10,7 @@ __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drs
 __copyright__ = "Adopted from: 2015 Susan Sim"
 __license__ = "MIT License"
 
-
+from copy import deepcopy
 #####################
 # HELPER FUNCTIONS ##
 #####################
@@ -40,6 +40,17 @@ def remove_duplicates(l):
 
     return result
 
+def d_copy(t):
+    dup_list= []
+    for row in t:
+        copy_cell =[]
+        for i in row:
+            copy_cell.append(i)
+
+        dup_list.append(copy_cell)
+
+    return dup_list
+
 
 class UnknownAttributeException(Exception):
     """
@@ -47,6 +58,8 @@ class UnknownAttributeException(Exception):
     that does not contain the named attribute
     """
     pass
+
+
 
 
 def selection(t, f):
@@ -141,12 +154,12 @@ def cross_product(t1, t2):
       are in the table, None is returned
     """
 
-    copy_table1 = t1[:]
-    copy_table2 = t2[:]
+    copy_table1 = d_copy(t1)
+    copy_table2 = d_copy(t2)
 
     new = []
 
-    count = 1
+
     # create new schema
     for category in copy_table2[0]:
         copy_table1[0].append(category)
@@ -161,7 +174,8 @@ def cross_product(t1, t2):
     if len(new) < 2:
         return None
 
+
     return new
 
 
-print(cross_product(EMPLOYEES, R1))
+
