@@ -122,5 +122,24 @@ def cross_product(t1, t2):
 
     """
 
-    return []
+   
+    new = []
+
+    count = 1
+    #create new schema
+    for category in t2[0]:
+        t1[0].append(category)
+    new.append(t1[0])
+    #make table content
+    if t1 != t2:
+        for row in t1[1:]:
+            step = 0
+            for i in t2[1:]:
+                new.append(row + i)
+
+    if len(new) < 2:
+        return None
+
+    return new
+
 
