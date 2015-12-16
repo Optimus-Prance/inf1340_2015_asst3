@@ -189,31 +189,28 @@ def test_cross_product_basic():
 
     assert is_equal(result_1, cross_product(R1, R2))
 
-    result_2 = [["Department", "Head", "Employee", "Department"],
-                ["production", "Mori", "Smith", "sales"],
-                ["sales", "Brown", "Smith", "sales"],
-                ["production", "Mori", "Black", "production"],
-                ["sales", "Brown", "Black", "production"],
-                ["production", "Mori", "White", "production"],
-                ["sales", "Brown", "White", "production"]]
-
+    result_2 = [['Department', 'Head', 'Employee', 'Department'],
+                ['production', 'Mori', 'Smith', 'sales'],
+                ['production', 'Mori', 'Black', 'production'],
+                ['production', 'Mori', 'White', 'production'],
+                ['sales', 'Brown', 'Smith', 'sales'],
+                ['sales', 'Brown', 'Black', 'production'],
+                ['sales', 'Brown', 'White', 'production']]
     assert is_equal(result_2, cross_product(R2, R1))
 
-    # Using larger tables
-    result_3 = [["Surname", "FirstName", "Age", "Salary", "Employee", "Department"],
-                ["Smith", "Mary", 25, 2000, "Smith", "sales"],
-                ["Smith", "Mary", 25, 2000, "Black", "production"],
-                ["Smith", "Mary", 25, 2000, "White", "production"],
-                ["Black", "Lucy", 40, 3000, "Smith", "sales"],
-                ["Black", "Lucy", 40, 3000, "Black", "production"],
-                ["Black", "Lucy", 40, 3000, "White", "production"],
-                ["Verdi", "Nico", 36, 4500, "Smith", "sales"],
-                ["Verdi", "Nico", 36, 4500, "Black", "production"],
-                ["Verdi", "Nico", 36, 4500, "White", "production"],
-                ["Smith", "Mark", 40, 3900, "Smith", "sales"],
-                ["Smith", "Mark", 40, 3900, "Black", "production"],
-                ["Smith", "Mark", 40, 3900, "White", "production"]]
-
+    result_3 = [['Surname', 'FirstName', 'Age', 'Salary', 'Employee', 'Department'],
+                ['Smith', 'Mary', 25, 2000, 'Smith', 'sales'],
+                ['Smith', 'Mary', 25, 2000, 'Black', 'production'],
+                ['Smith', 'Mary', 25, 2000, 'White', 'production'],
+                ['Black', 'Lucy', 40, 3000, 'Smith', 'sales'],
+                ['Black', 'Lucy', 40, 3000, 'Black', 'production'],
+                ['Black', 'Lucy', 40, 3000, 'White', 'production'],
+                ['Verdi', 'Nico', 36, 4500, 'Smith', 'sales'],
+                ['Verdi', 'Nico', 36, 4500, 'Black', 'production'],
+                ['Verdi', 'Nico', 36, 4500, 'White', 'production'],
+                ['Smith', 'Mark', 40, 3900, 'Smith', 'sales'],
+                ['Smith', 'Mark', 40, 3900, 'Black', 'production'],
+                ['Smith', 'Mark', 40, 3900, 'White', 'production']]
     assert is_equal(result_3, cross_product(EMPLOYEES, R1))
 
 def test_cross_product_same_tables():
