@@ -230,7 +230,13 @@ def test_cross_product_same_tables():
     """
     result = [["Employee", "Department", "Employee", "Department"],
               ["Smith", "sales", "Smith", "sales"],
+              ["Smith", "sales", "Black", "production"],
+              ["Smith", "sales", "White", "production"],
+              ["Black", "production", "Smith", "sales"],
               ["Black", "production", "Black", "production"],
+              ["Black", "production", "White", "production"],
+              ["White", "production", "Smith", "sales"],
+              ["White", "production", "Black", "production"],
               ["White", "production", "White", "production"]]
 
     assert is_equal(result, cross_product(R1, R1))
