@@ -250,9 +250,8 @@ def required_fields_exist(person):
             satisfy = False
     for field in person:
         if field in LOCATION_FIELDS:
-            for item in REQUIRED_FIELDS_LOCATION:
-                if item not in person[field]:
-                    satisfy = False
+            if not valid_location_field(person[field]):
+                satisfy = False
     return satisfy
 
 
