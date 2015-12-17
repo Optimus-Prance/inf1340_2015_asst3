@@ -6,8 +6,8 @@
 import os
 import json
 import re
-from exercise2 import decide, valid_passport_format, valid_date_format, valid_visa,\
-    travelled_via_country_with_medical_advisory
+from exercise2 import decide, valid_passport_format, valid_date_format, has_valid_visa,\
+    valid_visa_format, travelled_via_country_with_medical_advisory
 
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
@@ -171,9 +171,8 @@ def test_decide_visitors_require_visas_valid_visas_file():
         assert COUNTRIES[country_code]['visitor_visa_required'] == "1"
         valid = False
         assert "visa" in person
-        if "visa" in person:
-            if valid_visa(person["visa"], DATE_TODAY):
-                valid = True
+        if has_valid_visa(person):
+            valid = True
         assert valid
         for item in LOCATION_FIELDS:
             if item in person:
@@ -205,8 +204,7 @@ def test_decide_visitors_require_visas_invalid_visas_file():
         assert country_code != "KAN"
         assert COUNTRIES[country_code]['visitor_visa_required'] == "1"
         invalid_visa = True
-        if "visa" in person:
-            if valid_visa(person["visa"], DATE_TODAY):
+        if has_valid_visa(person):
                 invalid_visa = False
         assert invalid_visa
         for item in LOCATION_FIELDS:
@@ -302,9 +300,8 @@ def test_decide_visitors_via_country_with_medical_advisory_file():
         if COUNTRIES[country_code]['visitor_visa_required'] == "1":
             visa_valid = False
             assert "visa" in person
-            if "visa" in person:
-                if valid_visa(person["visa"], DATE_TODAY):
-                    visa_valid = True
+            if has_valid_visa(person):
+                visa_valid = True
             assert visa_valid
         traveled_via_medical_advisory_country = False
         location_fields_to_check = LOCATION_FIELDS[1:]  # Excludes home location field
@@ -341,9 +338,8 @@ def test_decide_visitors_invalid_visa_via_country_with_medical_advisory_file():
         assert country_code != "KAN"
         assert COUNTRIES[country_code]['visitor_visa_required'] == "1"
         invalid_visa = True
-        if "visa" in person:
-            if valid_visa(person["visa"], DATE_TODAY):
-                invalid_visa = False
+        if has_valid_visa(person):
+            invalid_visa = False
         assert invalid_visa
         traveled_via_medical_advisory_country = False
         location_fields_to_check = LOCATION_FIELDS[1:]  # Excludes home location field
@@ -421,19 +417,61 @@ def test_valid_visa_format():
     assert valid_visa_format("2rjxefn2rx") is False
 
 
-def test_valid_visa():
-    d1 = {"date": "2015-02-24", "code": "6P294-42HR2"}
-    assert valid_visa(d1, "2015-12-16") is True
-    d2 = {"date": "2013-12-25", "code": "TJq2R-25stx"}
-    assert valid_visa(d2, "2015-12-16") is True
-    d3 = {"date": "2015-02-24", "code": "3320R-8_3T2"}
-    assert valid_visa(d3, "2015-12-16") is False
-    d4 = {"date": "2015-02-24", "code": "T2EW5-WT255-RH2E3"}
-    assert valid_visa(d4, "2015-12-16") is False
-    d5 = {"date": "2013-12-17", "code": "TJq2R-25stx"}
-    assert valid_visa(d5, "2015-12-16")
-    d6 = {"date": "2013-12-01", "code": "TJq2R-25stx"}
-    assert valid_visa(d6, "2015-12-16") is False
+def test_has_valid_visa():
+    p1 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KAN"},
+          "visa": {"code": "BER4r-WDN39",
+                   "date": "2015-02-24"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert has_valid_visa(p1) is True
+    p2 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KAN"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert has_valid_visa(p2) is False
+    p3 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KAN"},
+          "visa": {"code": "BER4rWDN39",
+                   "date": "2015-02-24"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert has_valid_visa(p3) is False
+    p4 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KAN"},
+          "visa": {"code": "BER4r-WDN39",
+                   "date": "2010-02-24"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert has_valid_visa(p4) is False
 
 
 def test_valid_passport():
@@ -497,6 +535,8 @@ def test_travelled_via_country_with_medical_advisory():
                    "region": "ON",
                    "country": "KAN"},
           "entry_reason": "returning",
+          "visa": {"code": "BER4r-WDN39",
+                   "date": "2014-03-29"},
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "JIK"}}
