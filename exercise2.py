@@ -90,7 +90,7 @@ def decide(input_file, countries_file):
         accept = False
         if not required_fields_exist(person):
             reject = True
-        elif unknown_location_exists(person):
+        elif unknown_location_exists(person, COUNTRIES):
             reject = True
         else:
             if visitor_from_kan(person):
@@ -220,3 +220,22 @@ def visitor_from_country_requiring_visa(person, countries):
     """
     country_code = person["home"]["country"]
     return countries[country_code]["visitor_visa_required"] == "1"
+
+
+def unknown_location_exists(person, countries):
+    """
+    Checks to see if the traveller has any location field be unknown. With the exception of Kanadia (KAN), the
+    remaining countries should be listed in the dictionary of countries.
+    :param person: a person's application in the form of a dictionary. It is assumed that there is no missing
+    required information.
+    :param countries: a dictionary of country_codes.
+    :return: Returns True if the person has a location that is unknown, False otherwise.
+    """
+    unknown_location_found = False
+    for item in LOCATION_FIELDS:
+        if item in person:
+            country_code = person[item]["country"]
+            if country_code not in countries and country_code != "KAN":
+                unknown_location_found = True
+                break
+    return unknown_location_found

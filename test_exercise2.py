@@ -7,7 +7,8 @@ import os
 import json
 import re
 from exercise2 import decide, valid_passport_format, valid_date_format, has_valid_visa,\
-    valid_visa_format, travelled_via_country_with_medical_advisory, visitor_from_country_requiring_visa
+    valid_visa_format, travelled_via_country_with_medical_advisory, visitor_from_country_requiring_visa,\
+    unknown_location_exists, visitor_from_kan, required_fields_exist
 
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
@@ -600,6 +601,84 @@ def test_travelled_via_country_with_medical_advisory():
     assert travelled_via_country_with_medical_advisory(t6,countries) is True
 
 
+def test_unknown_location_exists():
+    countries = {"JIK": {"code": "JIK",
+                         "name": "Jikland",
+                         "visitor_visa_required": "0",
+                         "transit_visa_required": "0",
+                         "medical_advisory": ""},
+                 "LUG": {"code": "LUG",
+                         "name": "Democratic Republic of Lungary",
+                         "visitor_visa_required": "1",
+                         "transit_visa_required": "1",
+                         "medical_advisory": "MUMPS"}}
+    p1 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KAN"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert unknown_location_exists(p1,countries) is False
+    p2 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "LUG"},
+          "via": {"city": "Gruil",
+                   "region": "LU",
+                   "country": "JIK"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "LUG"}}
+    assert unknown_location_exists(p2,countries) is False
+    p3 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "ABC"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "LUG"}}
+    assert unknown_location_exists(p3,countries) is True
+    p4 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "ABC"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "DEF"}}
+    assert unknown_location_exists(p4,countries) is True
+    p5 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KAN"},
+          "via": {"city": "Alpha",
+                   "region": "BET",
+                   "country": "XYZ"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "LUG"}}
+    assert unknown_location_exists(p5,countries) is True
+
 
 def valid_file_contents(file_contents):
     """
@@ -622,7 +701,9 @@ def valid_file_contents(file_contents):
                 if not valid_passport_format(person[item]):
                     valid_file = False
             elif item is "visa":
-                if not has_valid_visa(person):
+                if not valid_date_format(person["visa"]["date"]):
+                    valid_file = False
+                if not valid_visa_format(person["visa"]["code"]):
                     valid_file = False
             elif item is "entry_reason":
                 if person[item] not in REASON_FOR_ENTRY:
