@@ -239,3 +239,10 @@ def unknown_location_exists(person, countries):
                 unknown_location_found = True
                 break
     return unknown_location_found
+
+def required_fields_exist(person):
+    satisfy = True
+    for field in REQUIRED_FIELDS:
+        if field  not in person:
+            satisfy = False
+    return satisfy

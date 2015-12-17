@@ -8,7 +8,7 @@ import json
 import re
 from exercise2 import decide, valid_passport_format, valid_date_format, has_valid_visa,\
     valid_visa_format, travelled_via_country_with_medical_advisory, visitor_from_country_requiring_visa,\
-    unknown_location_exists, visitor_from_kan, required_fields_exist
+    unknown_location_exists
 
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
