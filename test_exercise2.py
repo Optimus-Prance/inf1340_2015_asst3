@@ -7,7 +7,7 @@ import os
 import json
 import re
 from exercise2 import decide, valid_passport_format, valid_date_format, has_valid_visa,\
-    valid_visa_format, travelled_via_country_with_medical_advisory
+    valid_visa_format, travelled_via_country_with_medical_advisory, visitor_from_country_requiring_visa
 
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
@@ -631,3 +631,72 @@ def valid_file_contents(file_contents):
                 if not valid_date_format(person[item]):
                     valid_file = False
     return valid_file
+
+
+def test_visitor_from_country_requiring_visa():
+    countries = {"JIK": {"code": "JIK",
+                         "name": "Jikland",
+                         "visitor_visa_required": "0",
+                         "transit_visa_required": "0",
+                         "medical_advisory": ""},
+                 "KRA": {"code": "KRA",
+                         "name": "Kraznoviklandstan",
+                         "visitor_visa_required": "0",
+                         "transit_visa_required": "0",
+                         "medical_advisory": ""},
+                 "LUG": {"code": "LUG",
+                         "name": "Democratic Republic of Lungary",
+                         "visitor_visa_required": "1",
+                         "transit_visa_required": "1",
+                         "medical_advisory": "MUMPS"}}
+    p1 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "JIK"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert visitor_from_country_requiring_visa(p1,countries) is False
+    p2 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "KRA"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "LUG"},
+          "via": {"city": "Putang",
+                   "region": "Looma",
+                   "country": "LUG"}}
+    assert visitor_from_country_requiring_visa(p2,countries) is False
+    p3 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "LUG"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert visitor_from_country_requiring_visa(p3,countries) is True
+    p4 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "LUG"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "LUG"}}
+    assert visitor_from_country_requiring_visa(p4,countries) is True

@@ -88,7 +88,7 @@ def decide(input_file, countries_file):
         reject = False
         quarantine = False
         accept = False
-        if required_fields_exist(person):
+        if not required_fields_exist(person):
             reject = True
         elif unknown_location_exists(person):
             reject = True
@@ -198,8 +198,8 @@ def has_valid_visa(person):
     This function checks to see if the traveller has a visa that is valid, as defined by having a visa number of five
     groups of alphanumeric characters (case-insensitive), separated by dashes, and a date within the past two years.
 
-    :param visa: a dictionary with "code" and "date" that represents a visa number and date respectively
-    :param date_today: string that represents a passport or visa number
+    :param person: a person's application in the form of a dictionary. It is assumed that there is no missing
+    of required information.
     :return: True, if the visa code is valid and the date is not more than 2 years, False otherwise.
     """
     valid_visa = False
@@ -207,3 +207,16 @@ def has_valid_visa(person):
         valid_visa = valid_visa_format(person["visa"]["code"]) and \
                      not is_more_than_x_years_ago(2, person["visa"]["date"])
     return valid_visa
+
+
+def visitor_from_country_requiring_visa(person, countries):
+    """
+    Checks to see if the traveller requires a visa to enter as determined by the home country and the list of countries
+    provided by the ministry. We assume that the person's home town is a valid country and is not from Kanadia.
+    :param person: a person's application in the form of a dictionary. It is assumed that there is no missing
+    of required information and that the locations they travelled from or through are valid locations (in countries)
+    :param countries: a dictionary of country_codes with information like if a country has a medical advisory or not.
+    :return: Returns True if the person requires a visa to enter Kanadia, False otherwise.
+    """
+    country_code = person["home"]["country"]
+    return countries[country_code]["visitor_visa_required"] == "1"
