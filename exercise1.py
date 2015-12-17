@@ -91,7 +91,7 @@ def selection(t, f):
     if len(t) < 1:
         return None
     new.append(t[0])
-    for row_index in range(1,len(t)):
+    for row_index in range(1, len(t)):
         if f(t[row_index]) is True:
             new.append(t[row_index])
     if len(new) <= 1:
