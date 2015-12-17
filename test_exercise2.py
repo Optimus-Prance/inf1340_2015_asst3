@@ -782,7 +782,7 @@ def test_visitor_from_country_requiring_visa():
                    "country": "LUG"}}
     assert visitor_from_country_requiring_visa(p4,countries) is True
 
-def test_required_fields_exist(person):
+def test_required_fields_exist():
     p1 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
