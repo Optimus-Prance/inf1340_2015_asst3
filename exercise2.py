@@ -16,30 +16,19 @@ __copyright__ = "Adopted from: 2015 Susan Sim"
 __license__ = "MIT License"
 
 
-######################
-## global constants ##
-######################
+#####################
+# global constants ##
+#####################
 REQUIRED_FIELDS = ["passport", "first_name", "last_name",
                    "birth_date", "home", "entry_reason", "from"]
 LOCATION_FIELDS = ("home", "from", "via")
 REQUIRED_FIELDS_LOCATION = ("city", "region", "country")
 
-######################
-## global variables ##
-######################
-'''
-countries:
-dictionary mapping country codes (lowercase strings) to dictionaries
-containing the following keys:
-"code","name","visitor_visa_required",
-"transit_visa_required","medical_advisory"
-'''
-COUNTRIES = None
-
-
 #####################
 # HELPER FUNCTIONS ##
 #####################
+
+
 def is_more_than_x_years_ago(x, date_string):
     """
     Check if date is less than x years ago.
@@ -82,7 +71,7 @@ def decide(input_file, countries_file):
     citizen_json = json.loads(citizen_content)
     with open(countries_file, "r") as countries_file:
         countries_content = countries_file.read()
-    COUNTRIES = json.loads(countries_content)
+    countries = json.loads(countries_content)
 
     decisions = []
 
@@ -92,19 +81,19 @@ def decide(input_file, countries_file):
         accept = False
         if not required_fields_exist(person):
             reject = True
-        elif unknown_location_exists(person, COUNTRIES):
+        elif unknown_location_exists(person, countries):
             reject = True
         else:
             if person["home"]["country"] == "KAN":  # if visitor's home is Kanadia (KAN)
                 accept = True
-            elif not visitor_from_country_requiring_visa(person, COUNTRIES):
+            elif not visitor_from_country_requiring_visa(person, countries):
                 accept = True
-            elif visitor_from_country_requiring_visa(person, COUNTRIES) and has_valid_visa(person):
+            elif visitor_from_country_requiring_visa(person, countries) and has_valid_visa(person):
                 accept = True
             else:
                 reject = True
 
-            if travelled_via_country_with_medical_advisory(person, COUNTRIES):
+            if travelled_via_country_with_medical_advisory(person, countries):
                 quarantine = True
 
         if reject:
@@ -186,7 +175,7 @@ def valid_date_format(date_string):
         if year < 1900 or year > 2016 or month < 1 or month > 12 or day < 1 or day > 31:
             valid = False
         else:
-            if month in [4,6,9,11]:
+            if month in [4, 6, 9, 11]:
                 if day > 30:
                     valid = False
             elif month == 2:
@@ -243,6 +232,7 @@ def unknown_location_exists(person, countries):
                 break
     return unknown_location_found
 
+
 def required_fields_exist(person):
     satisfy = True
     for field in REQUIRED_FIELDS:
@@ -253,7 +243,6 @@ def required_fields_exist(person):
             if not valid_location_field(person[field]):
                 satisfy = False
     return satisfy
-
 
 
 def valid_location_field(location):

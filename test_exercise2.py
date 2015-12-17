@@ -105,7 +105,7 @@ def test_decide_unknown_locations_file():
         required_location_fields = LOCATION_FIELDS[:2]
         for item in required_location_fields:
             assert item in person
-        assert unknown_location_exists(person,COUNTRIES)
+        assert unknown_location_exists(person, COUNTRIES)
 
 
 def test_decide_unknown_locations():
@@ -491,7 +491,7 @@ def test_travelled_via_country_with_medical_advisory():
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "JIK"}}
-    assert travelled_via_country_with_medical_advisory(t1,countries) is False
+    assert travelled_via_country_with_medical_advisory(t1, countries) is False
     t2 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -505,7 +505,7 @@ def test_travelled_via_country_with_medical_advisory():
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "JIK"}}
-    assert travelled_via_country_with_medical_advisory(t2,countries) is False
+    assert travelled_via_country_with_medical_advisory(t2, countries) is False
     t3 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -518,9 +518,9 @@ def test_travelled_via_country_with_medical_advisory():
                    "region": "Headdeskia",
                    "country": "JIK"},
           "via": {"city": "Lasher",
-                   "region": "Phuy",
-                   "country": "KRA"}}
-    assert travelled_via_country_with_medical_advisory(t3,countries) is False
+                  "region": "Phuy",
+                  "country": "KRA"}}
+    assert travelled_via_country_with_medical_advisory(t3, countries) is False
     t4 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -532,7 +532,7 @@ def test_travelled_via_country_with_medical_advisory():
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "LUG"}}
-    assert travelled_via_country_with_medical_advisory(t4,countries) is True
+    assert travelled_via_country_with_medical_advisory(t4, countries) is True
     t5 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -545,9 +545,9 @@ def test_travelled_via_country_with_medical_advisory():
                    "region": "Headdeskia",
                    "country": "KRA"},
           "via": {"city": "Lasher",
-                   "region": "Phuy",
-                   "country": "LUG"}}
-    assert travelled_via_country_with_medical_advisory(t5,countries) is True
+                  "region": "Phuy",
+                  "country": "LUG"}}
+    assert travelled_via_country_with_medical_advisory(t5, countries) is True
     t6 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -560,9 +560,9 @@ def test_travelled_via_country_with_medical_advisory():
                    "region": "Headdeskia",
                    "country": "LUG"},
           "via": {"city": "Lasher",
-                   "region": "Phuy",
-                   "country": "LUG"}}
-    assert travelled_via_country_with_medical_advisory(t6,countries) is True
+                  "region": "Phuy",
+                  "country": "LUG"}}
+    assert travelled_via_country_with_medical_advisory(t6, countries) is True
 
 
 def test_unknown_location_exists():
@@ -587,7 +587,7 @@ def test_unknown_location_exists():
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "JIK"}}
-    assert unknown_location_exists(p1,countries) is False
+    assert unknown_location_exists(p1, countries) is False
     p2 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -596,13 +596,13 @@ def test_unknown_location_exists():
                    "region": "ON",
                    "country": "LUG"},
           "via": {"city": "Gruil",
-                   "region": "LU",
-                   "country": "JIK"},
+                  "region": "LU",
+                  "country": "JIK"},
           "entry_reason": "returning",
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "LUG"}}
-    assert unknown_location_exists(p2,countries) is False
+    assert unknown_location_exists(p2, countries) is False
     p3 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -614,7 +614,7 @@ def test_unknown_location_exists():
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "LUG"}}
-    assert unknown_location_exists(p3,countries) is True
+    assert unknown_location_exists(p3, countries) is True
     p4 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -626,7 +626,7 @@ def test_unknown_location_exists():
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "DEF"}}
-    assert unknown_location_exists(p4,countries) is True
+    assert unknown_location_exists(p4, countries) is True
     p5 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -635,13 +635,13 @@ def test_unknown_location_exists():
                    "region": "ON",
                    "country": "KAN"},
           "via": {"city": "Alpha",
-                   "region": "BET",
-                   "country": "XYZ"},
+                  "region": "BET",
+                  "country": "XYZ"},
           "entry_reason": "returning",
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "LUG"}}
-    assert unknown_location_exists(p5,countries) is True
+    assert unknown_location_exists(p5, countries) is True
 
 
 def valid_file_contents(file_contents):
@@ -675,7 +675,7 @@ def valid_file_contents(file_contents):
             elif item is "birth_date":
                 if not valid_date_format(person[item]):
                     valid_file = False
-        if unknown_location_exists(person,COUNTRIES):
+        if unknown_location_exists(person, COUNTRIES):
             valid_file = False
     return valid_file
 
@@ -707,7 +707,7 @@ def test_visitor_from_country_requiring_visa():
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "JIK"}}
-    assert visitor_from_country_requiring_visa(p1,countries) is False
+    assert visitor_from_country_requiring_visa(p1, countries) is False
     p2 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -720,9 +720,9 @@ def test_visitor_from_country_requiring_visa():
                    "region": "Headdeskia",
                    "country": "LUG"},
           "via": {"city": "Putang",
-                   "region": "Looma",
-                   "country": "LUG"}}
-    assert visitor_from_country_requiring_visa(p2,countries) is False
+                  "region": "Looma",
+                  "country": "LUG"}}
+    assert visitor_from_country_requiring_visa(p2, countries) is False
     p3 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -734,7 +734,7 @@ def test_visitor_from_country_requiring_visa():
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "JIK"}}
-    assert visitor_from_country_requiring_visa(p3,countries) is True
+    assert visitor_from_country_requiring_visa(p3, countries) is True
     p4 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "last_name": "DOE",
@@ -746,7 +746,8 @@ def test_visitor_from_country_requiring_visa():
           "from": {"city": "Wumpus",
                    "region": "Headdeskia",
                    "country": "LUG"}}
-    assert visitor_from_country_requiring_visa(p4,countries) is True
+    assert visitor_from_country_requiring_visa(p4, countries) is True
+
 
 def test_required_fields_exist():
     p1 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
@@ -765,11 +766,11 @@ def test_required_fields_exist():
                    "region": "ON",
                    "country": "JIK"},
           "via": {"city": "Putang",
-                   "region": "Looma",
-                   "country": "LUG"},
+                  "region": "Looma",
+                  "country": "LUG"},
           "visa": {"code": "BER4r-WDN39",
                    "date": "2014-03-29"},
-         "passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
           "first_name": "JACK",
           "entry_reason": "returning",
           "last_name": "DOE",
@@ -785,8 +786,8 @@ def test_required_fields_exist():
                    "region": "ON",
                    "country": "JIK"},
           "via": {"city": "Putang",
-                   "region": "Looma",
-                   "country": "LUG"},
+                  "region": "Looma",
+                  "country": "LUG"},
           "visa": {"code": "BER4r-WDN39",
                    "date": "2014-03-29"},
           "entry_reason": "returning",
@@ -801,8 +802,8 @@ def test_required_fields_exist():
                    "region": "ON",
                    "country": "JIK"},
           "via": {"city": "Putang",
-                   "region": "Looma",
-                   "country": "LUG"},
+                  "region": "Looma",
+                  "country": "LUG"},
           "visa": {"code": "BER4r-WDN39",
                    "date": "2014-03-29"},
           "entry_reason": "returning",
@@ -817,8 +818,8 @@ def test_required_fields_exist():
                    "region": "ON",
                    "country": "JIK"},
           "via": {"city": "Putang",
-                   "region": "Looma",
-                   "country": "LUG"},
+                  "region": "Looma",
+                  "country": "LUG"},
           "visa": {"code": "BER4r-WDN39",
                    "date": "2014-03-29"},
           "entry_reason": "returning",
@@ -833,8 +834,8 @@ def test_required_fields_exist():
                    "region": "ON",
                    "country": "JIK"},
           "via": {"city": "Putang",
-                   "region": "Looma",
-                   "country": "LUG"},
+                  "region": "Looma",
+                  "country": "LUG"},
           "visa": {"code": "BER4r-WDN39",
                    "date": "2014-03-29"},
           "entry_reason": "returning",
@@ -859,8 +860,8 @@ def test_required_fields_exist():
                    "region": "ON",
                    "country": "JIK"},
           "via": {"city": "Putang",
-                   "region": "Looma",
-                   "country": "LUG"},
+                  "region": "Looma",
+                  "country": "LUG"},
           "visa": {"code": "BER4r-WDN39",
                    "date": "2014-03-29"},
           "entry_reason": "returning"}
