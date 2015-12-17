@@ -42,6 +42,11 @@ def remove_duplicates(l):
 
 
 def deep_copy(t):
+    """
+    Makes a copy of each item in t, where t is a list of lists
+    :param t: a list
+
+    """
     dup_list = []
     for row in t:
         copy_cell = []
