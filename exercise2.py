@@ -22,6 +22,8 @@ __license__ = "MIT License"
 REQUIRED_FIELDS = ["passport", "first_name", "last_name",
                    "birth_date", "home", "entry_reason", "from"]
 LOCATION_FIELDS = ("home", "from", "via")
+REQUIRED_FIELDS_LOCATION = ("city", "region", "country")
+
 ######################
 ## global variables ##
 ######################
@@ -204,8 +206,9 @@ def has_valid_visa(person):
     """
     valid_visa = False
     if "visa" in person:
-        valid_visa = valid_visa_format(person["visa"]["code"]) and \
-                     not is_more_than_x_years_ago(2, person["visa"]["date"])
+        if "code" in person["visa"] and "date" in person["visa"]:
+            valid_visa = valid_visa_format(person["visa"]["code"]) and \
+                         not is_more_than_x_years_ago(2, person["visa"]["date"])
     return valid_visa
 
 
@@ -246,3 +249,25 @@ def required_fields_exist(person):
         if field  not in person:
             satisfy = False
     return satisfy
+
+def valid_location_field(location, countries):
+    """
+    Finds out if a location field (in the form of a dictionary) is a validly filled out and that the country_code
+    matches a country in the countries dictionary. Returns a boolean.
+
+    :param location: a dictionary
+    :param countries: a dictionary of country_codes.
+    :return: True the location field is valid (nothing missing, and valid country). False otherwise.
+    """
+    valid = True
+    if len(location) != 3:
+        valid = False
+    else:
+        for item in REQUIRED_FIELDS_LOCATION:
+            if item not in location:
+                valid = False
+        if valid:
+            country_code = location["country"]
+            if country_code not in countries and country_code != "KAN":
+                valid = False
+    return valid

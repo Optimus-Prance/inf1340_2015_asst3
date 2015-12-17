@@ -5,10 +5,10 @@
 # imports one per line
 import os
 import json
-import re
+
 from exercise2 import decide, valid_passport_format, valid_date_format, has_valid_visa,\
     valid_visa_format, travelled_via_country_with_medical_advisory, visitor_from_country_requiring_visa,\
-    unknown_location_exists, required_fields_exist
+    unknown_location_exists, required_fields_exist, valid_location_field
 
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
@@ -34,7 +34,7 @@ with open(COUNTRIES_FILE, "r") as countries_file:
 
 REQUIRED_FIELDS = ("first_name", "last_name", "birth_date", "passport", "home", "from", "entry_reason")
 LOCATION_FIELDS = ("home", "from", "via")
-REQUIRED_FIELDS_LOCATION = ("city", "region", "country")
+
 REASON_FOR_ENTRY = ('returning', 'visiting')
 '''
 DATE_TODAY is a string of the format YYYY-MM-DD representing today's date.
@@ -74,13 +74,12 @@ def test_decide_missing_required_information_file():
         for item in REQUIRED_FIELDS:
             if item not in person:
                 required_fields_included = False
-                break
-            else:
-                if item in LOCATION_FIELDS:
-                    if not valid_location_field(person[item]):
-                        required_fields_included = False
-                elif item is "passport" and "passport" in person:
-                    assert valid_passport_format(person[item]) is True
+            if item is "passport" and "passport" in person:
+                assert valid_passport_format(person[item]) is True
+        for item in LOCATION_FIELDS:
+            if item in person:
+                if not valid_location_field(person[item], COUNTRIES):
+                    required_fields_included = False
         assert required_fields_included is False
 
 
@@ -88,7 +87,7 @@ def test_decide_missing_required_information():
     """
     Travellers have required information that is missing, including incomplete location information.
     """
-    assert decide("test_decide_missing_required_information.json", COUNTRIES_FILE) == ["Reject"] * 16
+    assert decide("test_decide_missing_required_information.json", COUNTRIES_FILE) == ["Reject"] * 17
 
 
 def test_decide_unknown_locations_file():
@@ -105,18 +104,14 @@ def test_decide_unknown_locations_file():
             assert item in person
         required_location_fields = LOCATION_FIELDS[:2]
         optional_location_fields = LOCATION_FIELDS[2:]
+        unknown_location_found = False
         for item in required_location_fields:
             assert item in person
-            for field in REQUIRED_FIELDS_LOCATION:
-                assert field in person[item]
+            if not valid_location_field(person[item], COUNTRIES):
+                unknown_location_found = True
         for item in optional_location_fields:
             if item in person:
-                for field in REQUIRED_FIELDS_LOCATION:
-                    assert field in person[item]
-        unknown_location_found = False
-        for item in LOCATION_FIELDS:
-            if item in person:
-                if person[item]['country'] not in COUNTRIES:
+                if not valid_location_field(person[item], COUNTRIES):
                     unknown_location_found = True
         assert unknown_location_found
 
@@ -217,11 +212,12 @@ def test_decide_visitors_require_visas_invalid_visas_file():
 def test_decide_visitors_require_visas_invalid_visas():
     """
     Visitors that have their home location other than KAN (but still a valid location), and because of their home
-    countries, they require a visa to enter. Their visas are invalid/expired because they are older than 2 years.
+    countries, they require a visa to enter. Their visas are invalid/expired because they are older than 2 years or
+    that their visa information is missing.
     These travellers did not travel from or through a country with a medical advisory and all required information
     is present.
     """
-    assert decide("test_decide_visitors_require_visas_invalid_visas.json", COUNTRIES_FILE) == ["Reject"] * 4
+    assert decide("test_decide_visitors_require_visas_invalid_visas.json", COUNTRIES_FILE) == ["Reject"] * 5
 
 
 def test_decide_visitors_visas_not_needed_file():
@@ -365,43 +361,36 @@ def test_decide_visitors_invalid_visa_via_country_with_medical_advisory():
 #####################
 
 
-def valid_location_field(location):
-    """
-    Finds out if a location field (in the form of a dictionary) is a validly filled out and the country_code matches
-    a country in countries.json. Returns a boolean.
-
-    :param location: a dictionary
-    :return: True if the dictionary has all of and only the location fields. False otherwise.
-    """
-    valid = True
-    if len(location) != 3:
-        valid = False
-    else:
-        for item in REQUIRED_FIELDS_LOCATION:
-            if item not in location:
-                valid = False
-        if valid:
-            country_code = location["country"]
-            if country_code not in COUNTRIES and country_code != "KAN":
-                valid = False
-    return valid
-
-
 def test_valid_location_field():
+    countries = {"JIK": {"code": "JIK",
+                         "name": "Jikland",
+                         "visitor_visa_required": "0",
+                         "transit_visa_required": "0",
+                         "medical_advisory": ""},
+                 "KRA": {"code": "KRA",
+                         "name": "Kraznoviklandstan",
+                         "visitor_visa_required": "0",
+                         "transit_visa_required": "0",
+                         "medical_advisory": ""},
+                 "LUG": {"code": "LUG",
+                         "name": "Democratic Republic of Lungary",
+                         "visitor_visa_required": "1",
+                         "transit_visa_required": "1",
+                         "medical_advisory": "MUMPS"}}
     d1 = {'city': 'city_name', 'region': 'region_name', 'country': 'LUG'}
-    assert valid_location_field(d1)
-    d2 = {'city': 'city_name', 'country': 'III', 'region': 'region_name'}
-    assert valid_location_field(d2)
+    assert valid_location_field(d1, countries)
+    d2 = {'city': 'city_name', 'country': 'KRA', 'region': 'region_name'}
+    assert valid_location_field(d2, countries)
     d3 = {'city': 'city_name', 'country': 'AAA', 'region': 'region_name'}
-    assert valid_location_field(d3) is False
-    d4 = {'city': 'city_name', 'province': 'province_name', 'country': 'III'}
-    assert valid_location_field(d4) is False
-    d5 = {'municipality': 'municipality_name', 'state': 'state_name', 'country': 'III'}
-    assert valid_location_field(d5) is False
-    d6 = {'city': 'city_name', 'country': 'III'}
-    assert valid_location_field(d6) is False
-    d7 = {'city': 'city_name', 'region': 'region_name', 'province': 'province_name', 'country': 'III'}
-    assert valid_location_field(d7) is False
+    assert valid_location_field(d3, countries) is False
+    d4 = {'city': 'city_name', 'province': 'province_name', 'country': 'JIK'}
+    assert valid_location_field(d4, countries) is False
+    d5 = {'municipality': 'municipality_name', 'state': 'state_name', 'country': 'KRA'}
+    assert valid_location_field(d5, countries) is False
+    d6 = {'city': 'city_name', 'country': 'KRA'}
+    assert valid_location_field(d6, countries) is False
+    d7 = {'city': 'city_name', 'region': 'region_name', 'province': 'province_name', 'country': 'LUG'}
+    assert valid_location_field(d7, countries) is False
 
 
 def test_valid_visa_format():
@@ -695,7 +684,7 @@ def valid_file_contents(file_contents):
                 valid_file = False
         for item in person:
             if item in LOCATION_FIELDS:
-                if not valid_location_field(person[item]):
+                if not valid_location_field(person[item],COUNTRIES):
                     valid_file = False
             elif item is "passport":
                 if not valid_passport_format(person[item]):
