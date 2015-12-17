@@ -250,14 +250,12 @@ def required_fields_exist(person):
             satisfy = False
     return satisfy
 
-def valid_location_field(location, countries):
+def valid_location_field(location):
     """
-    Finds out if a location field (in the form of a dictionary) is a validly filled out and that the country_code
-    matches a country in the countries dictionary. Returns a boolean.
+    Finds out if a location field (in the form of a dictionary) is a validly filled out. Returns a boolean.
 
     :param location: a dictionary
-    :param countries: a dictionary of country_codes.
-    :return: True the location field is valid (nothing missing, and valid country). False otherwise.
+    :return: True the location field is valid. False otherwise.
     """
     valid = True
     if len(location) != 3:
@@ -265,9 +263,5 @@ def valid_location_field(location, countries):
     else:
         for item in REQUIRED_FIELDS_LOCATION:
             if item not in location:
-                valid = False
-        if valid:
-            country_code = location["country"]
-            if country_code not in countries and country_code != "KAN":
                 valid = False
     return valid

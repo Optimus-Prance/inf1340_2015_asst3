@@ -78,7 +78,7 @@ def test_decide_missing_required_information_file():
                 assert valid_passport_format(person[item]) is True
         for item in LOCATION_FIELDS:
             if item in person:
-                if not valid_location_field(person[item], COUNTRIES):
+                if not valid_location_field(person[item]):
                     required_fields_included = False
         assert required_fields_included is False
 
@@ -103,17 +103,9 @@ def test_decide_unknown_locations_file():
         for item in REQUIRED_FIELDS:
             assert item in person
         required_location_fields = LOCATION_FIELDS[:2]
-        optional_location_fields = LOCATION_FIELDS[2:]
-        unknown_location_found = False
         for item in required_location_fields:
             assert item in person
-            if not valid_location_field(person[item], COUNTRIES):
-                unknown_location_found = True
-        for item in optional_location_fields:
-            if item in person:
-                if not valid_location_field(person[item], COUNTRIES):
-                    unknown_location_found = True
-        assert unknown_location_found
+        assert unknown_location_exists(person,COUNTRIES)
 
 
 def test_decide_unknown_locations():
@@ -362,35 +354,18 @@ def test_decide_visitors_invalid_visa_via_country_with_medical_advisory():
 
 
 def test_valid_location_field():
-    countries = {"JIK": {"code": "JIK",
-                         "name": "Jikland",
-                         "visitor_visa_required": "0",
-                         "transit_visa_required": "0",
-                         "medical_advisory": ""},
-                 "KRA": {"code": "KRA",
-                         "name": "Kraznoviklandstan",
-                         "visitor_visa_required": "0",
-                         "transit_visa_required": "0",
-                         "medical_advisory": ""},
-                 "LUG": {"code": "LUG",
-                         "name": "Democratic Republic of Lungary",
-                         "visitor_visa_required": "1",
-                         "transit_visa_required": "1",
-                         "medical_advisory": "MUMPS"}}
     d1 = {'city': 'city_name', 'region': 'region_name', 'country': 'LUG'}
-    assert valid_location_field(d1, countries)
+    assert valid_location_field(d1)
     d2 = {'city': 'city_name', 'country': 'KRA', 'region': 'region_name'}
-    assert valid_location_field(d2, countries)
-    d3 = {'city': 'city_name', 'country': 'AAA', 'region': 'region_name'}
-    assert valid_location_field(d3, countries) is False
-    d4 = {'city': 'city_name', 'province': 'province_name', 'country': 'JIK'}
-    assert valid_location_field(d4, countries) is False
-    d5 = {'municipality': 'municipality_name', 'state': 'state_name', 'country': 'KRA'}
-    assert valid_location_field(d5, countries) is False
-    d6 = {'city': 'city_name', 'country': 'KRA'}
-    assert valid_location_field(d6, countries) is False
-    d7 = {'city': 'city_name', 'region': 'region_name', 'province': 'province_name', 'country': 'LUG'}
-    assert valid_location_field(d7, countries) is False
+    assert valid_location_field(d2)
+    d3 = {'city': 'city_name', 'province': 'province_name', 'country': 'JIK'}
+    assert valid_location_field(d3) is False
+    d4 = {'municipality': 'municipality_name', 'state': 'state_name', 'country': 'KRA'}
+    assert valid_location_field(d4) is False
+    d5 = {'city': 'city_name', 'country': 'KRA'}
+    assert valid_location_field(d5) is False
+    d6 = {'city': 'city_name', 'region': 'region_name', 'province': 'province_name', 'country': 'LUG'}
+    assert valid_location_field(d6) is False
 
 
 def test_valid_visa_format():
@@ -684,7 +659,7 @@ def valid_file_contents(file_contents):
                 valid_file = False
         for item in person:
             if item in LOCATION_FIELDS:
-                if not valid_location_field(person[item],COUNTRIES):
+                if not valid_location_field(person[item]):
                     valid_file = False
             elif item is "passport":
                 if not valid_passport_format(person[item]):
@@ -700,6 +675,8 @@ def valid_file_contents(file_contents):
             elif item is "birth_date":
                 if not valid_date_format(person[item]):
                     valid_file = False
+        if unknown_location_exists(person,COUNTRIES):
+            valid_file = False
     return valid_file
 
 
