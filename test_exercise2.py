@@ -622,7 +622,7 @@ def valid_file_contents(file_contents):
                 if not valid_passport_format(person[item]):
                     valid_file = False
             elif item is "visa":
-                if not valid_visa(person[item]['code'], DATE_TODAY) or not valid_date_format(person[item]['date']):
+                if not has_valid_visa(person):
                     valid_file = False
             elif item is "entry_reason":
                 if person[item] not in REASON_FOR_ENTRY:
