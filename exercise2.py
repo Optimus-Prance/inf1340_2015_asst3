@@ -246,9 +246,16 @@ def unknown_location_exists(person, countries):
 def required_fields_exist(person):
     satisfy = True
     for field in REQUIRED_FIELDS:
-        if field  not in person:
+        if field not in person:
             satisfy = False
+    for field in person:
+        if field in LOCATION_FIELDS:
+            for item in REQUIRED_FIELDS_LOCATION:
+                if item not in person[field]:
+                    satisfy = False
     return satisfy
+
+
 
 def valid_location_field(location):
     """
