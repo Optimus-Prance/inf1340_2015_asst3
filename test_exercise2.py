@@ -8,7 +8,7 @@ import json
 import re
 from exercise2 import decide, valid_passport_format, valid_date_format, has_valid_visa,\
     valid_visa_format, travelled_via_country_with_medical_advisory, visitor_from_country_requiring_visa,\
-    unknown_location_exists
+    unknown_location_exists, required_fields_exist
 
 __author__ = "Darius Chow and Ryan Prance, Adopted from: Susan Sim"
 __email__ = "darius.chow@mail.utoronto.ca, ryan.prance@mail.utoronto.ca, ses@drsusansim.org"
@@ -781,3 +781,121 @@ def test_visitor_from_country_requiring_visa():
                    "region": "Headdeskia",
                    "country": "LUG"}}
     assert visitor_from_country_requiring_visa(p4,countries) is True
+
+def test_required_fields_exist(person):
+    p1 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "JIK"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert required_fields_exist(p1) is True
+    p2 = {"home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "JIK"},
+          "via": {"city": "Putang",
+                   "region": "Looma",
+                   "country": "LUG"},
+          "visa": {"code": "BER4r-WDN39",
+                   "date": "2014-03-29"},
+         "passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "entry_reason": "returning",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert required_fields_exist(p2) is True
+    p3 = {"first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "JIK"},
+          "via": {"city": "Putang",
+                   "region": "Looma",
+                   "country": "LUG"},
+          "visa": {"code": "BER4r-WDN39",
+                   "date": "2014-03-29"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert required_fields_exist(p3) is False
+    p4 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "JIK"},
+          "via": {"city": "Putang",
+                   "region": "Looma",
+                   "country": "LUG"},
+          "visa": {"code": "BER4r-WDN39",
+                   "date": "2014-03-29"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert required_fields_exist(p4) is False
+    p5 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "JIK"},
+          "via": {"city": "Putang",
+                   "region": "Looma",
+                   "country": "LUG"},
+          "visa": {"code": "BER4r-WDN39",
+                   "date": "2014-03-29"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert required_fields_exist(p5) is False
+    p6 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "JIK"},
+          "via": {"city": "Putang",
+                   "region": "Looma",
+                   "country": "LUG"},
+          "visa": {"code": "BER4r-WDN39",
+                   "date": "2014-03-29"},
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert required_fields_exist(p6) is False
+    p7 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "entry_reason": "returning",
+          "from": {"city": "Wumpus",
+                   "region": "Headdeskia",
+                   "country": "JIK"}}
+    assert required_fields_exist(p7) is False
+    p8 = {"passport": "6P294-42HR2-95PSF-93NFF-2T5WF",
+          "first_name": "JACK",
+          "last_name": "DOE",
+          "birth_date": "1938-12-21",
+          "home": {"city": "Bala",
+                   "region": "ON",
+                   "country": "JIK"},
+          "via": {"city": "Putang",
+                   "region": "Looma",
+                   "country": "LUG"},
+          "visa": {"code": "BER4r-WDN39",
+                   "date": "2014-03-29"},
+          "entry_reason": "returning"}
+    assert required_fields_exist(p8) is False

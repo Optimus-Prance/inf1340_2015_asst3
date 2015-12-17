@@ -93,7 +93,7 @@ def decide(input_file, countries_file):
         elif unknown_location_exists(person, COUNTRIES):
             reject = True
         else:
-            if visitor_from_kan(person):
+            if person["home"]["country"] == "KAN":  # if visitor's home is Kanadia (KAN)
                 accept = True
             elif not visitor_from_country_requiring_visa(person, COUNTRIES):
                 accept = True
