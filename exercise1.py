@@ -88,11 +88,12 @@ def selection(t, f):
       resulting table is empty, None is returned.
     """
     new = []
-    if len(t) < 2:
+    if len(t) < 1:
         return None
-    for row in t:
-        if f(row) is True:
-            new.append(row)
+    new.append(t[0])
+    for row_index in range(1,len(t)):
+        if f(t[row_index]) is True:
+            new.append(t[row_index])
     if len(new) <= 1:
         return None
     return new
@@ -127,6 +128,7 @@ def projection(t, r):
         else:
             raise UnknownAttributeException
 
+    # Use plist, a list of indices of the matched attributes, to populate the final table
     new = []
     for row in t:
         container = []
