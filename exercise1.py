@@ -161,12 +161,9 @@ def cross_product(t1, t2):
         copy_table1[0].append(category)
     new.append(copy_table1[0])
     # make table content
-    if copy_table1 != copy_table2:
-        for row in copy_table1[1:]:
-
-            for i in copy_table2[1:]:
-                new.append(row + i)
-
+    for row in copy_table1[1:]:
+        for i in copy_table2[1:]:
+            new.append(row + i)
     if len(new) < 2:
         return None
 
