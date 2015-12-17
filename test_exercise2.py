@@ -250,7 +250,7 @@ def test_decide_visitors_visas_not_needed():
     countries, they do not require a visa to enter. These travellers did not travel from or through a country with
     a medical advisory and all required information is present.
     """
-    assert decide("test_decide_visitors_visas_not_needed.json", COUNTRIES_FILE) == ["Accept"] * 1
+    assert decide("test_decide_visitors_visas_not_needed.json", COUNTRIES_FILE) == ["Accept"] * 5
 
 
 def test_decide_kan_citizens_via_country_with_medical_advisory_file():
